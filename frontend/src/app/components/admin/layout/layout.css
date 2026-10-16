@@ -1,0 +1,38 @@
+
+.layout-container {
+  height: 100vh;
+}
+
+.sidenav {
+  width: 260px;
+}
+.mat-nav-list a[mat-list-item] {
+  font: var(--mat-list-item-label-text-font);
+  color: var(--mat-list-item-label-text-color);
+}
+
+.mat-nav-list a[mat-list-item].active {
+  background: rgba(0, 188, 212, 0.1); 
+  color: #00BCD4; 
+}
+
+.mat-nav-list a[mat-list-item].active mat-icon {
+  color: #00BCD4; 
+}
+
+.sidenav-footer {
+  padding: 1rem;
+}
+.sidenav-footer button {
+  width: 100%;
+}
+
+.content-wrapper {
+  padding: 1.5rem 2rem;
+}
+
+@media (max-width: 599px) {
+  .content-wrapper {
+    padding: 1rem;
+  }
+}

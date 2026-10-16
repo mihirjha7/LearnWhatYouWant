@@ -1,0 +1,17 @@
+<a class="skip-link" href="#main-content">Skip to main content</a>
+@if (showPublicChrome()) {
+  <app-navbar></app-navbar>
+}
+<main id="main-content" tabindex="-1" [class.focus-mode]="focusMode()">
+  <router-outlet></router-outlet>
+</main>
+@if (showPublicChrome()) {
+  <app-footer></app-footer>
+}
+<app-notifications></app-notifications>
+@if (!network.online()) {
+  <div class="offline-banner ws-banner ws-banner--warning" role="status">
+    <strong>You are offline.</strong>
+    <span>Drafts and attempt answers stay on this device and sync when you reconnect.</span>
+  </div>
+}

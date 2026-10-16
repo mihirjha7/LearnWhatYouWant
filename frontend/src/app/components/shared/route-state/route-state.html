@@ -1,0 +1,16 @@
+<section class="state-page" aria-labelledby="state-heading">
+  <div class="state-copy">
+    <p class="state-eyebrow">{{ eyebrow }}</p>
+    <p class="state-code" aria-hidden="true">{{ code }}</p>
+    <h1 id="state-heading">{{ heading }}</h1>
+    <p class="state-message">{{ message }}</p>
+    <a class="state-action" [routerLink]="actionLink">{{ actionLabel }}</a>
+  </div>
+
+  <div class="state-visual" aria-hidden="true">
+    <span></span>
+    <span></span>
+    <span></span>
+    <strong>{{ code }}</strong>
+  </div>
+</section>

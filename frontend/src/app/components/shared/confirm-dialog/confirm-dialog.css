@@ -1,0 +1,33 @@
+/* src/app/components/shared/confirm-dialog/confirm-dialog.component.css */
+
+.dialog-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 1.5rem 1.5rem 0; /* Add top padding */
+}
+
+.header-icon {
+  font-size: 3.5rem; /* Make the icon large */
+  width: 3.5rem;
+  height: 3.5rem;
+  margin-bottom: 0.5rem;
+}
+
+/* Center the title text */
+[mat-dialog-title] {
+  text-align: center;
+  margin-bottom: 0;
+  font-weight: 500;
+}
+
+/* Center the main message text */
+.dialog-content {
+  text-align: center;
+  padding: 1rem 1.5rem;
+}
+
+/* Add proper padding to the button bar */
+[mat-dialog-actions] {
+  padding: 0 1.5rem 1.5rem;
+}

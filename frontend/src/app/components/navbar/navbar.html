@@ -1,0 +1,56 @@
+<header class="public-header">
+  <div class="header-inner">
+    <a routerLink="/home" class="brand" aria-label="Learnova home">
+      <span class="brand-mark" aria-hidden="true">L</span>
+      <span>Learnova</span>
+    </a>
+
+    <nav class="desktop-nav" aria-label="Primary navigation">
+      <a routerLink="/catalog" routerLinkActive="active">Catalog</a>
+      <a routerLink="/home" fragment="paths">Learning paths</a>
+      <a routerLink="/about" routerLinkActive="active">About</a>
+      <a routerLink="/contact" routerLinkActive="active">Contact</a>
+    </nav>
+
+    <div class="header-actions">
+      <a class="search-link" routerLink="/catalog" [queryParams]="{ focus: 'search' }">Search</a>
+      <button
+        type="button"
+        class="theme-button"
+        [attr.aria-label]="preferences.resolvedTheme() === 'dark' ? 'Use light theme' : 'Use dark theme'"
+        (click)="preferences.toggleTheme()"
+      >
+        {{ preferences.resolvedTheme() === 'dark' ? 'Light' : 'Dark' }}
+      </button>
+
+      <ng-container *ngIf="authService.isLoggedIn$ | async; else guestActions">
+        <details class="account-menu">
+          <summary aria-label="Open account menu">
+            <img *ngIf="imagePreviewUrl" [src]="imagePreviewUrl" alt="">
+            <span *ngIf="!imagePreviewUrl" aria-hidden="true">{{ userInitial() }}</span>
+          </summary>
+          <div class="account-popover">
+            <p>{{ authService.getCurrentUser()?.displayName }}</p>
+            <a [routerLink]="dashboardLink()">Open workspace</a>
+            <button type="button" (click)="logout()">Sign out</button>
+          </div>
+        </details>
+      </ng-container>
+
+      <ng-template #guestActions>
+        <a class="sign-in" routerLink="/login">Sign in</a>
+        <a class="create-account" routerLink="/register">Start learning</a>
+      </ng-template>
+
+      <details class="mobile-menu">
+        <summary aria-label="Open navigation menu"><span></span><span></span><span></span></summary>
+        <nav aria-label="Mobile navigation">
+          <a routerLink="/catalog">Catalog</a>
+          <a routerLink="/home" fragment="paths">Learning paths</a>
+          <a routerLink="/about">About</a>
+          <a routerLink="/contact">Contact</a>
+        </nav>
+      </details>
+    </div>
+  </div>
+</header>

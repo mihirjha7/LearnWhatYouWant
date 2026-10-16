@@ -1,0 +1,33 @@
+<footer class="public-footer">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <a routerLink="/home" aria-label="Learnova home">
+        <span aria-hidden="true">L</span>
+        <strong>Learnova</strong>
+      </a>
+      <p>Practical learning that turns steady progress into proven skill.</p>
+    </div>
+
+    <nav aria-label="Explore Learnova">
+      <strong>Explore</strong>
+      <a routerLink="/catalog">Course catalog</a>
+      <a routerLink="/home" fragment="paths">Learning paths</a>
+      <a [routerLink]="dashboardLink()">Your workspace</a>
+    </nav>
+
+    <nav aria-label="Learnova company links">
+      <strong>Company</strong>
+      <a routerLink="/about">About</a>
+      <a routerLink="/contact">Contact</a>
+      <a routerLink="/accessibility">Accessibility statement</a>
+      <a routerLink="/privacy">Privacy</a>
+      <a routerLink="/terms">Terms</a>
+      <a routerLink="/credentials">Verify a credential</a>
+    </nav>
+  </div>
+
+  <div class="footer-meta">
+    <span>&copy; {{ year }} Learnova</span>
+    <span>Designed for focused, accessible learning.</span>
+  </div>
+</footer>

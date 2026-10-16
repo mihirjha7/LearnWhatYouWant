@@ -1,0 +1,123 @@
+<section class="home-hero" aria-labelledby="home-title">
+  <img src="assets/images/home-hero.png" alt="A learner holding books with course milestones around them">
+  <div class="hero-scrim" aria-hidden="true"></div>
+  <div class="hero-content">
+    <p class="eyebrow">Learning that moves with you</p>
+    <h1 id="home-title">Learnova</h1>
+    <h2>Build useful skills. Prove what you can do.</h2>
+    <p class="hero-copy">
+      Practical courses, focused learning paths, and feedback that turns each session into visible progress.
+    </p>
+
+    <form class="hero-search" role="search" (ngSubmit)="submitSearch()">
+      <label for="home-search">What would you like to learn?</label>
+      <div>
+        <input id="home-search" type="search" [formControl]="search" placeholder="Try Angular, leadership, or SQL">
+        <button type="submit">Find courses</button>
+      </div>
+    </form>
+
+    <div class="hero-actions">
+      <a class="primary-action" routerLink="/catalog">Explore the catalog</a>
+      <a class="secondary-action" routerLink="/register-instructor">Teach on Learnova</a>
+    </div>
+  </div>
+</section>
+
+<section class="direction-band" aria-labelledby="directions-title">
+  <div class="section-inner">
+    <div class="section-heading compact-heading">
+      <div>
+        <p class="eyebrow">Choose a direction</p>
+        <h2 id="directions-title">Start with the outcome you need</h2>
+      </div>
+      <a routerLink="/catalog">View every topic</a>
+    </div>
+    <div class="direction-list">
+      @for (category of categories(); track category; let index = $index) {
+        <a routerLink="/catalog" [queryParams]="{ category }">
+          <span aria-hidden="true">0{{ index + 1 }}</span>
+          <strong>{{ category }}</strong>
+        </a>
+      }
+    </div>
+  </div>
+</section>
+
+<section class="featured-section" aria-labelledby="featured-title">
+  <div class="section-inner">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">Popular now</p>
+        <h2 id="featured-title">Courses learners keep recommending</h2>
+      </div>
+      <p>Short on theory, rich in guided practice, and designed for progress you can explain.</p>
+    </div>
+
+    @if (isLoading()) {
+      <div class="course-grid" aria-label="Loading courses">
+        @for (item of [1, 2, 3]; track item) {
+          <div class="course-skeleton skeleton"></div>
+        }
+      </div>
+    } @else if (errorMessage()) {
+      <div class="error-state">
+        <h3>Catalog unavailable</h3>
+        <p>{{ errorMessage() }}</p>
+      </div>
+    } @else {
+      <div class="course-grid">
+        @for (course of courses(); track course.id) {
+          <app-catalog-course-card [course]="course"></app-catalog-course-card>
+        }
+      </div>
+    }
+  </div>
+</section>
+
+<section id="paths" class="paths-section" aria-labelledby="paths-title">
+  <div class="section-inner">
+    <div class="section-heading">
+      <div>
+        <p class="eyebrow">Guided journeys</p>
+        <h2 id="paths-title">Follow a path, not a pile of tabs</h2>
+      </div>
+      <p>Ordered courses, practical milestones, and a clear view of the capability you are building.</p>
+    </div>
+    <div class="path-grid">
+      @for (path of learningPaths(); track path.id; let number = $index) {
+        <a [routerLink]="['/catalog/paths', path.id]" [attr.data-accent]="path.accent">
+          <span class="path-number">0{{ number + 1 }}</span>
+          <div>
+            <p>{{ path.level }} · {{ path.courseIds.length }} courses</p>
+            <h3>{{ path.title }}</h3>
+            <span>{{ path.summary }}</span>
+          </div>
+          <strong>View path</strong>
+        </a>
+      }
+    </div>
+  </div>
+</section>
+
+<section class="method-section" aria-labelledby="method-title">
+  <div class="section-inner method-layout">
+    <div>
+      <p class="eyebrow">A calmer way to grow</p>
+      <h2 id="method-title">Know what comes next in every session</h2>
+    </div>
+    <ol>
+      <li><span>01</span><div><strong>Choose a goal</strong><p>Start from a skill or outcome, then see the effort before you commit.</p></div></li>
+      <li><span>02</span><div><strong>Practice with context</strong><p>Use examples, checks, and projects that resemble the work you want to do.</p></div></li>
+      <li><span>03</span><div><strong>Keep the evidence</strong><p>Track mastery, feedback, certificates, and the next useful step in one place.</p></div></li>
+    </ol>
+  </div>
+</section>
+
+<section class="final-cta" aria-labelledby="cta-title">
+  <div>
+    <p class="eyebrow">Your next useful hour</p>
+    <h2 id="cta-title">Turn it into a skill that stays.</h2>
+  </div>
+  <a routerLink="/register">Create your learning plan</a>
+</section>

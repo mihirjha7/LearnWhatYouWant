@@ -1,0 +1,6 @@
+.identity-action { margin-top: var(--space-6); }
+.code-input { font-family: var(--font-mono); font-size: var(--text-2xl); text-align: center; }
+.resend-button { min-height: 2.75rem; border: 0; background: transparent; color: var(--brand-hover); font-weight: 600; cursor: pointer; }
+.callback-status { display: grid; place-items: center; gap: var(--space-4); margin-block: var(--space-8); color: var(--text-soft); text-align: center; }
+.spinner { width: 2.5rem; height: 2.5rem; border: 3px solid var(--border); border-top-color: var(--brand); border-radius: 50%; animation: spin 0.8s linear infinite; }
+@keyframes spin { to { transform: rotate(360deg); } }

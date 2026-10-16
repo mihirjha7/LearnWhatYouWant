@@ -1,0 +1,4 @@
+.container { max-width: 1200px; margin: 24px auto; padding: 0 16px; }
+    .toolbar { display: flex; gap: 12px; align-items: center; margin: 12px 0 16px; }
+    .search { width: 320px; }
+    .table-wrapper { overflow: auto; }

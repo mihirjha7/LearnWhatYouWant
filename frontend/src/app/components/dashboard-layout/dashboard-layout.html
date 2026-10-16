@@ -1,0 +1,108 @@
+<div class="workspace" [class.workspace--collapsed]="isCollapsed()">
+  <button
+    type="button"
+    class="workspace-backdrop"
+    [class.workspace-backdrop--visible]="isMobileNavOpen()"
+    aria-label="Close workspace navigation"
+    (click)="closeMobileNav()"
+  ></button>
+
+  <aside
+    id="workspace-navigation"
+    class="workspace-sidebar"
+    [class.workspace-sidebar--mobile-open]="isMobileNavOpen()"
+  >
+    <div class="workspace-brand">
+      <a routerLink="/home" class="brand-link" aria-label="Learnova home">
+        <span class="brand-mark" aria-hidden="true">L</span>
+        <span class="brand-name">Learnova</span>
+      </a>
+      <button
+        type="button"
+        class="rail-toggle"
+        [attr.aria-label]="isCollapsed() ? 'Expand navigation' : 'Collapse navigation'"
+        (click)="toggleSidebar()"
+      >
+        <mat-icon aria-hidden="true">{{ isCollapsed() ? 'chevron_right' : 'chevron_left' }}</mat-icon>
+      </button>
+    </div>
+
+    <div class="workspace-context">
+      <span>Workspace</span>
+      <strong>{{ title }}</strong>
+    </div>
+
+    <nav class="workspace-nav" aria-label="Workspace navigation">
+      <a
+        *ngFor="let item of visibleItems"
+        [routerLink]="item.path"
+        routerLinkActive="active"
+        [routerLinkActiveOptions]="{ exact: item.path === 'dashboard' }"
+        [attr.title]="isCollapsed() ? item.label : null"
+        (click)="closeMobileNav()"
+      >
+        <mat-icon aria-hidden="true">{{ item.icon }}</mat-icon>
+        <span>{{ item.label }}</span>
+      </a>
+    </nav>
+
+    <div class="workspace-account">
+      <span class="account-avatar" aria-hidden="true">{{ userInitial }}</span>
+      <span class="account-copy">
+        <strong>{{ userName }}</strong>
+        <small>Signed in securely</small>
+      </span>
+      <button type="button" aria-label="Sign out" title="Sign out" (click)="logout()">
+        <mat-icon aria-hidden="true">logout</mat-icon>
+      </button>
+    </div>
+  </aside>
+
+  <section class="workspace-main">
+    <header class="workspace-topbar">
+      <button
+        type="button"
+        class="mobile-menu-button"
+        aria-controls="workspace-navigation"
+        [attr.aria-expanded]="isMobileNavOpen()"
+        aria-label="Open workspace navigation"
+        (click)="toggleMobileNav()"
+      >
+        <mat-icon aria-hidden="true">menu</mat-icon>
+      </button>
+
+      <div class="topbar-title">
+        <span>Learnova</span>
+        <strong>{{ title }}</strong>
+      </div>
+
+      <div class="topbar-actions">
+        <button
+          type="button"
+          [attr.aria-label]="preferences.resolvedTheme() === 'dark' ? 'Use light theme' : 'Use dark theme'"
+          [attr.title]="preferences.resolvedTheme() === 'dark' ? 'Use light theme' : 'Use dark theme'"
+          (click)="preferences.toggleTheme()"
+        >
+          <mat-icon aria-hidden="true">{{ preferences.resolvedTheme() === 'dark' ? 'light_mode' : 'dark_mode' }}</mat-icon>
+        </button>
+        <span class="topbar-avatar" aria-label="Signed in as {{ userName }}">{{ userInitial }}</span>
+      </div>
+    </header>
+
+    <div class="workspace-content">
+      <ng-content></ng-content>
+    </div>
+  </section>
+
+  <nav class="mobile-bottom-nav" aria-label="Primary workspace navigation">
+    <a
+      *ngFor="let item of visibleItems | slice: 0 : 4"
+      [routerLink]="item.path"
+      routerLinkActive="active"
+      [routerLinkActiveOptions]="{ exact: item.path === 'dashboard' }"
+    >
+      <mat-icon aria-hidden="true">{{ item.icon }}</mat-icon>
+      <span>{{ item.label }}</span>
+    </a>
+  </nav>
+</div>

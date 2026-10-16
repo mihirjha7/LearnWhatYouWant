@@ -1,0 +1,588 @@
+/* Step Content and Titles (UNCHANGED) */
+/* .step-content {
+    padding: 20px 0;
+} */
+
+.step-title {
+    font-size: 1.8em;
+    color: #343a40;
+    margin-top: 0;
+    margin-bottom: 30px;
+    border-left: 5px solid #3f51b5;
+    padding-left: 15px;
+}
+
+/* --- Step 1: Category Search and Feedback --- (Mostly UNCHANGED) */
+.category-list-wrapper {
+    margin-top: 10px;
+}
+
+.category-list div,
+.no-results,
+.initial-instructions {
+    padding: 10px 15px;
+    margin-bottom: 20px;
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+}
+
+.category-list {
+    background-color: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+}
+
+.category-list div {
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.category-list div:hover {
+    background-color: #f0f4f7;
+}
+
+.category-list div.selected {
+    background-color: #e8eaf6;
+    border-left: 3px solid #3f51b5;
+    font-weight: 700;
+    color: #1a237e;
+}
+
+.initial-instructions {
+    color: #616161;
+    background-color: #f5f5f5;
+}
+
+/* New Category Alert (User Requirement) */
+.new-category-alert {
+    background-color: #fff3e0;
+    color: #e65100;
+    border: 1px solid #ffcc80;
+    font-weight: 600;
+}
+
+.new-category-alert strong {
+    color: #1a237e;
+}
+
+/* Existing Category Alert (New Style) */
+.existing-category-alert {
+    background-color: #e8f5e9;
+    /* Light green */
+    color: #388e3c;
+    border: 1px solid #c8e6c9;
+    font-weight: 600;
+}
+
+/* NEW: Read-Only Step Display (for Category and Details) */
+.read-only-step-display {
+    padding: 25px;
+    border-radius: 12px;
+    background-color: #f7f9fa;
+    border: 1px solid #e0e0e0;
+    margin-top: 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.read-only-content {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+    max-width: 80%;
+}
+
+.info-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1em;
+    color: #343a40;
+    min-width: 45%;
+}
+.info-item.full-row {
+    min-width: 100%;
+}
+
+.info-item p {
+    margin: 0;
+    display: flex;
+    gap: 5px;
+    align-items: center;
+}
+
+.info-item span {
+    color: #616161;
+    font-weight: 400;
+}
+
+.step-actions-read-only {
+    flex-shrink: 0;
+}
+
+/* --- Step 2: Details Context --- (UNCHANGED) */
+.category-context {
+    padding: 15px 20px;
+    margin-bottom: 30px;
+    border-radius: 8px;
+    background-color: #e3f2fd;
+    /* Light Blue background for context */
+    border: 1px solid #bbdefb;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 1.1em;
+    color: #1565c0;
+}
+
+.category-context strong {
+    color: #1a237e;
+}
+
+/* --- Form Groups & Layout --- (UNCHANGED) */
+.full-width {
+    width: 100%;
+}
+
+.form-row {
+    display: flex;
+    gap: 20px;
+}
+
+.form-row .mat-form-field {
+    flex-grow: 1;
+}
+
+/* Tiny Icon for inline use (UNCHANGED) */
+.icon-tiny {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    line-height: 16px;
+    vertical-align: middle;
+}
+
+/* --- Lesson List Styles --- (UNCHANGED) */
+.lesson-list-summary {
+    margin-bottom: 30px;
+    padding: 20px !important;
+    border-radius: 8px !important;
+    background-color: #ffffff !important;
+    border: 1px solid #e0e0e0;
+}
+
+.lesson-list-summary h3 {
+    margin-top: 0;
+    color: #1a237e;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed #e0e0e0;
+    margin-bottom: 10px;
+}
+
+.lesson-list-content {
+    padding: 0;
+}
+
+/* Custom Mat-List-Item Styling (Clickable) (UNCHANGED) */
+.lesson-item {
+    min-height: 55px !important;
+    padding: 0 10px !important;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.lesson-item:hover {
+    background-color: #f7f7f7;
+}
+
+.lesson-item.expanded {
+    background-color: #e8eaf6;
+    /* Light background when open */
+}
+
+/* Lesson Title Prominence (UNCHANGED) */
+.lesson-title-text {
+    font-size: 1.1em;
+    font-weight: 600;
+    color: #1a237e;
+}
+
+.lesson-metadata-line {
+    font-size: 0.9em;
+    color: #757575;
+    margin-top: 4px;
+}
+
+.lesson-actions {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Attachment Icon Indicator (UNCHANGED) */
+.attachment-present-icon {
+    color: #ff9800;
+    /* Amber/Orange color */
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.attachment-present-icon:hover {
+    transform: scale(1.1);
+}
+
+.view-button {
+    color: #3f51b5;
+    /* Primary accent for view button */
+}
+
+/* --- Lesson Details Expansion Panel (Book Style) --- (UNCHANGED) */
+.lesson-details-panel.book-style {
+    margin: 10px 0 20px 0;
+    padding: 0;
+    background-color: #ffffff;
+    border: 1px solid #c5cae9;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.05);
+    animation: fadeIn 0.4s ease-out;
+    overflow: hidden;
+    margin-left: 24px;
+    width: calc(100% - 24px);
+}
+
+.book-cover {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 20px;
+    background-color: #3f51b5;
+    color: white;
+    font-weight: 600;
+    border-bottom: 2px solid #1a237e;
+}
+
+.book-cover mat-icon {
+    font-size: 24px;
+}
+
+.book-cover h4 {
+    margin: 0;
+    font-size: 1.2em;
+}
+
+.book-page {
+    padding: 20px;
+}
+
+.book-page h5 {
+    font-weight: 600;
+    color: #1a237e;
+    margin-top: 0;
+    margin-bottom: 10px;
+}
+
+.attachment-details {
+    margin-top: 15px;
+    padding-top: 10px;
+    border-top: 1px dashed #e0e0e0;
+}
+
+.link-external {
+    color: #1a237e;
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.link-external:hover {
+    text-decoration: underline;
+}
+
+.external-link {
+    color: #9e9e9e;
+    font-size: 14px;
+    margin-left: 5px;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-5px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Lesson Creation/Edit Form (UNCHANGED) */
+.lesson-create-form {
+    padding: 25px !important;
+    border-radius: 8px !important;
+    background-color: #ffffff !important;
+    border: 1px solid #e0e0e0;
+}
+
+/* Document Upload Area Styles (UNCHANGED) */
+.attachment-group-container {
+    margin-top: 20px;
+    border: 1px solid #f0f0f0;
+    padding: 15px;
+    border-radius: 8px;
+    background-color: #fcfcfc;
+}
+
+/* Simple Checkbox Look (UNCHANGED) */
+.attachment-header-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 500;
+    color: #1a237e;
+}
+
+.toggle-description {
+    font-size: 0.85em;
+    color: #666;
+}
+
+.attachment-box {
+    border: 2px dashed #b3e5fc;
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    background-color: #f7faff;
+    margin-top: 10px;
+    transition: background-color 0.2s, border-color 0.2s;
+}
+
+.attachment-box:hover {
+    background-color: #e8f4ff;
+    border-color: #007bff;
+}
+
+.attachment-box input[type="file"] {
+    display: none;
+}
+
+.file-label {
+    display: block;
+    cursor: pointer;
+    color: #007bff;
+    font-weight: 500;
+    margin-bottom: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-size: 1.1em;
+}
+
+/* --- Button Styles --- */
+.step-actions {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f0;
+    /* Updated to align right for form buttons */
+    text-align: right; 
+    /* display: flex; */
+    gap: 10px;
+    justify-content: flex-end;
+}
+.lessons-final-actions {
+    margin-top: 30px;
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f0;
+    display: flex;
+    justify-content: flex-end; /* Keep buttons to the right */
+    align-items: center;
+    position: relative;
+}
+
+.lessons-final-actions .no-lessons-alert {
+    position: absolute;
+    left: 0;
+    margin: 0;
+    color: #d32f2f;
+    font-weight: 500;
+}
+
+
+.step-actions.final-action {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid #1a237e;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+}
+
+.publish-button {
+    font-size: 1.2em !important;
+    padding: 12px 40px !important;
+    border-radius: 30px !important;
+    letter-spacing: 1px;
+    background: linear-gradient(45deg, #1a237e, #3f51b5);
+    transition: all 0.3s;
+}
+
+.publish-button:disabled {
+    background: #9e9e9e !important;
+    box-shadow: none !important;
+}
+
+/* Category Description Card (UNCHANGED) */
+.category-description-card {
+    margin-top: 1rem;
+    padding: 1rem;
+    background-color: #f7f9fa;
+    /* Light grey background */
+    border-left: 4px solid #3f51b5;
+    /* Primary color border */
+    border-radius: 8px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.description-text {
+    /* Style for the actual description text */
+    font-size: 0.9rem;
+    color: #4a5568;
+    /* Darker text */
+    line-height: 1.4;
+}
+
+
+/* --- Step 4: Preview Styles --- */
+.preview-card {
+    padding: 20px !important;
+    border-radius: 12px !important;
+    background-color: #fff;
+}
+
+.preview-content {
+    padding-top: 15px;
+}
+
+.preview-section {
+    margin-bottom: 25px;
+    padding: 15px;
+    border: 1px solid #f0f0f0;
+    border-radius: 8px;
+    background-color: #fcfcfc;
+}
+
+.preview-section h4 {
+    color: #1a237e;
+    border-bottom: 2px solid #3f51b5;
+    padding-bottom: 5px;
+    margin-top: 0;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.syllabus-text {
+    /* Preserve whitespace/line breaks if they are added in the form */
+    white-space: pre-wrap;
+}
+
+.lessons-preview mat-list {
+    padding: 0;
+}
+.lessons-preview mat-list-item {
+    min-height: 40px;
+    padding-left: 0;
+    border-bottom: 1px dotted #e0e0e0;
+}
+.lessons-preview mat-list-item:last-child {
+    border-bottom: none;
+}
+
+.metadata-grid {
+    display: flex;
+    gap: 20px;
+    justify-content: flex-start;
+}
+
+.metadata-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background-color: #e3f2fd;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9em;
+    font-weight: 500;
+}
+
+
+
+.course-material-card {
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  padding: 16px;
+  transition: box-shadow 0.3s ease;
+}
+
+.course-material-card:hover {
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+}
+
+.file-upload-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.file-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  background-color: #00bcd4; /* Material Cyan */
+  color: white;
+  padding: 10px 16px;
+  border-radius: 4px;
+  cursor: pointer;
+  font-weight: 500;
+  transition: background-color 0.3s ease;
+}
+
+.file-label:hover {
+  background-color: #0097a7;
+}
+
+.file-input {
+  display: none;
+}
+
+.file-display-name {
+  font-size: 14px;
+  color: #333;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.view-link {
+  font-size: 13px;
+  color: #ff9800; /* Material Orange */
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 4px;
+}
+
+.view-link:hover {
+  text-decoration: underline;
+}
+
+.icon-tiny {
+  font-size: 16px;
+}

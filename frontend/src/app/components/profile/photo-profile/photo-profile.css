@@ -1,0 +1,132 @@
+.photo-card {
+	margin-top: 3.1rem;
+	padding: 1.5rem;
+}
+
+.photo-card mat-card-header {
+	padding-bottom: 1rem;
+}
+
+.photo-card mat-card-title {
+	font-size: 1.5rem;
+	font-weight: 600;
+	color: #333;
+}
+
+.photo-card mat-card-subtitle {
+	color: #6c757d;
+}
+
+.loading-state {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 2rem 0;
+	color: #6c757d;
+}
+
+.photo-container {
+	display: flex;
+	flex-direction: column; /* Default stack for small screens */
+	gap: 2rem;
+	margin-top: 1.5rem;
+}
+
+/* On medium screens and up, switch to a row layout */
+@media (min-width: 768px) {
+	.photo-container {
+		flex-direction: row;
+	}
+}
+
+.image-preview-section .section-title,
+.upload-section .section-title {
+	font-size: 1rem;
+	font-weight: 500;
+	margin-bottom: 0.8rem;
+	color: #555;
+}
+
+/* FIX 3: Make the preview box circular */
+.image-preview-box {
+	width: 200px;
+	height: 200px;
+	border: 1px solid #ddd;
+	border-radius: 50%; /* Makes it a circle */
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	overflow: hidden; /* Clips the image to the circle */
+	background-color: #f0f0f0;
+}
+
+.image-preview-box .profile-image {
+	width: 100%;
+	height: 100%;
+	object-fit: cover; /* Ensures the image covers the entire circle */
+}
+
+/* Style for the default icon inside the circle */
+.image-preview-box .default-icon {
+	font-size: 80px; /* Larger icon for default */
+	width: 80px;
+	height: 80px;
+	color: #ccc;
+}
+
+/* 🟢 NEW CSS for Initials Avatar */
+.initials-avatar {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    /* Use a visually distinct color for the background */
+    background-color: #007bff; /* Example: Blue */
+    color: white;
+    font-size: 90px; /* Large font size for the initial */
+    font-weight: bold;
+    line-height: 1;
+}
+
+
+/* FIX START: Revised file input and button alignment */
+.upload-section {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1;
+}
+
+.file-selection-row {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	margin-bottom: 1rem;
+}
+
+.file-name {
+	flex-grow: 1;
+	padding: 0.5rem 0.8rem;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	background-color: #f0f0f0;
+	color: #555;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	min-width: 0; /* Ensures truncation works */
+}
+
+/* Align the 'Upload image' button to the right */
+.upload-button-row {
+	display: flex;
+	justify-content: flex-end;
+	margin-bottom: 0.5rem; /* Space between upload and remove */
+}
+
+/* Align the 'Remove image' button to the right */
+.remove-button-row {
+	display: flex;
+	justify-content: flex-end;
+}

@@ -1,0 +1,118 @@
+.profile-page-container {
+	display: flex;
+	min-height: calc(100vh - 64px); /* Adjust based on your header height */
+	background-color: #f8f9fa;
+	padding: 1.5rem;
+	gap: 2rem; /* Space between sidebar and content */
+}
+
+.profile-sidebar {
+	flex-basis: 280px; /* Fixed width for sidebar */
+	flex-shrink: 0; /* Prevent sidebar from shrinking */
+	padding: 1.5rem;
+	box-shadow: 0 4px 8px rgba(0,0,0,0.05);
+	display: flex;
+	flex-direction: column;
+}
+
+.profile-content-area {
+	flex-grow: 1;
+}
+
+.user-avatar-section {
+	text-align: center;
+	margin-bottom: 2rem;
+	padding-bottom: 1.5rem;
+	border-bottom: 1px solid #eee;
+}
+
+.user-avatar-circle {
+	width: 96px;
+	height: 96px;
+	border-radius: 50%;
+	/* The background color is now for the initials fallback */
+	background-color: #007bff; /* Changed to a nice blue for contrast */
+	color: white;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	margin: 0 auto 1rem auto;
+	overflow: hidden; 
+}
+
+/* 🟢 NEW: Styling for the Initials */
+.user-avatar-circle .initials-display {
+    font-size: 48px; /* Prominent size for the initial */
+    font-weight: 700;
+    line-height: 1;
+    text-align: center;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* FIX: New style for the actual image inside the circle */
+.user-avatar-circle .sidebar-avatar-img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover; /* Ensures the image covers the entire circle without distortion */
+}
+
+/* REMOVED: No longer need mat-icon styling here since it's replaced by initials-display */
+/* .user-avatar-circle mat-icon {
+	font-size: 60px;
+	width: 60px;
+	height: 60px;
+} */
+
+.user-name {
+	font-size: 1.3rem;
+	font-weight: 600;
+	color: #333;
+	margin-bottom: 0.5rem;
+}
+
+.public-profile-link {
+	color: #007bff; /* A standard link blue */
+	font-size: 0.9rem;
+	text-transform: none;
+	padding: 0;
+	min-width: unset;
+}
+
+.profile-nav {
+	display: flex;
+	flex-direction: column;
+	flex-grow: 1; /* Pushes back button to the bottom */
+}
+
+.profile-nav .nav-item {
+	justify-content: flex-start; /* Align text to the left */
+	padding: 10px 15px;
+	margin-bottom: 8px;
+	border-radius: 8px;
+	color: #555;
+	font-weight: 500;
+}
+
+.profile-nav .nav-item:hover {
+	background-color: #f0f0f0;
+}
+
+.profile-nav .nav-item.active-link {
+	background-color: #ede7f6; /* Lighter purple background */
+	color: #512DA8; /* Darker purple text */
+	font-weight: 600;
+}
+
+.back-button-section {
+	padding-top: 1rem;
+	border-top: 1px solid #eee;
+	margin-top: auto; /* Pushes to the bottom */
+}
+
+.back-button-section button {
+	width: 100%;
+}

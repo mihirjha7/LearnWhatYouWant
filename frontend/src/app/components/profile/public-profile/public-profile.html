@@ -1,0 +1,43 @@
+<mat-card class="profile-card">
+  <mat-card-header>
+    <mat-card-title>Public profile</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <div *ngIf="isLoading" class="loading-state">
+      <mat-spinner diameter="30"></mat-spinner>
+      <p>Loading profile...</p>
+    </div>
+    <div *ngIf="!isLoading">
+      <h3 class="basics-heading">Basics:</h3>
+      
+      <!-- Name field with proper ngModel binding -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Name</mat-label>
+        <!-- Correct name property in the model is 'name' -->
+        <input matInput [(ngModel)]="userProfile.name" name="name" required>
+      </mat-form-field>
+
+      <!-- Bio field with proper ngModel binding -->
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Bio</mat-label>
+        <!-- Correct bio property in the model is 'bio' -->
+        <textarea matInput [(ngModel)]="userProfile.bio" name="bio" rows="4"></textarea>
+      </mat-form-field>
+
+    </div>
+  </mat-card-content>
+  <mat-card-actions *ngIf="!isLoading">
+    <!-- Use isSaving for button state and spinner -->
+    <button mat-flat-button 
+            color="primary" 
+            (click)="saveProfile()" 
+            [disabled]="isSaving">
+        <!-- Using a ternary operator for the spinner visibility -->
+        <mat-icon *ngIf="isSaving" class="spinner-icon">
+             <mat-spinner color="accent" diameter="20"></mat-spinner>
+        </mat-icon>
+        <span *ngIf="!isSaving">Save</span>
+        <span *ngIf="isSaving">Saving...</span>
+    </button>
+  </mat-card-actions>
+</mat-card>

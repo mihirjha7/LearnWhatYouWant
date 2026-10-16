@@ -1,0 +1,77 @@
+<div class="page-container">
+  <div class="page-header">
+    <h1 class="mat-h1">Course Management</h1>
+    <p class="mat-body-1">Manage course content, categories, and publishing status.</p>
+  </div>
+
+  <mat-toolbar class="filter-toolbar">
+    <mat-form-field appearance="outline" class="search-field">
+      <mat-label>Search courses</mat-label>
+      <mat-icon matPrefix>search</mat-icon>
+      <input matInput [(ngModel)]="searchTerm" (input)="applyFilters()">
+    </mat-form-field>
+
+    <div class="filters">
+      <mat-form-field appearance="outline">
+        <mat-label>Category</mat-label>
+        <mat-select [(ngModel)]="categoryFilter" (selectionChange)="applyFilters()">
+          <mat-option value="all">All Categories</mat-option>
+          <mat-option *ngFor="let cat of allCategories" [value]="cat.categoryID">{{ cat.name }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Status</mat-label>
+        <mat-select [(ngModel)]="statusFilter" (selectionChange)="applyFilters()">
+          <mat-option value="all">All Statuses</mat-option>
+          <mat-option value="published">Published</mat-option>
+          <mat-option value="draft">Draft</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+  </mat-toolbar>
+
+  <div *ngIf="isLoading" class="loading-container">
+    <mat-spinner diameter="50"></mat-spinner>
+    <p>Loading courses...</p>
+  </div>
+
+  <div *ngIf="!isLoading" class="content-area">
+    <div *ngIf="filteredCourses.length > 0; else noCourses" class="course-grid">
+      
+      <mat-card *ngFor="let course of filteredCourses" class="course-card">
+        <img mat-card-image [src]="course.thumbnailURL || 'assets/placeholder.png'" [alt]="course.title">
+        
+        <mat-card-header>
+          <mat-card-subtitle>{{ getCategoryName(course.categoryID!) }}</mat-card-subtitle>
+          <mat-card-title>{{ course.title }}</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content class="card-meta">
+          <span>Level: {{ course.level }}</span>
+          <span>Duration: {{ course.duration | durationFormat}} hrs</span>
+        </mat-card-content>
+
+        <mat-card-actions>
+          <mat-chip-set>
+            <mat-chip [color]="course.published ? 'primary' : ''" highlighted>
+              {{ course.published ? 'Published' : 'Draft' }}
+            </mat-chip>
+          </mat-chip-set>
+          <button mat-stroked-button (click)="togglePublishStatus(course)">
+            {{ course.published ? 'Unpublish' : 'Publish' }}
+          </button>
+        </mat-card-actions>
+      </mat-card>
+
+    </div>
+
+    <ng-template #noCourses>
+      <div class="empty-state">
+        <mat-icon class="empty-state-icon">search_off</mat-icon>
+        <h2>No Courses Found</h2>
+        <p>Your search and filter criteria did not match any courses.</p>
+      </div>
+    </ng-template>
+  </div>
+</div>

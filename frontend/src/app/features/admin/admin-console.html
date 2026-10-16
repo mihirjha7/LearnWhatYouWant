@@ -1,0 +1,165 @@
+<div class="ws-page">
+  <app-page-header eyebrow="Platform administration · Production tenant" [heading]="copy.heading" [intro]="copy.intro"></app-page-header>
+
+  @if (loading()) {
+    <app-skeleton [lines]="3" [label]="'Loading ' + copy.heading"></app-skeleton>
+  } @else if (data(); as d) {
+    @switch (mode) {
+      @case ('overview') {
+        <section class="ws-stack" aria-labelledby="attention-title">
+          <h2 id="attention-title" class="ws-card__title">Needs attention</h2>
+          <div class="ws-grid">
+            @for (item of d.attention; track item.id) {
+              <a class="ws-card" [routerLink]="item.link" [style.border-left]="'4px solid var(--' + (item.tone === 'danger' ? 'danger' : item.tone === 'warning' ? 'warning' : 'info') + ')'" style="text-decoration: none; color: inherit">
+                <strong>{{ item.title }}</strong><span class="ws-small ws-muted">{{ item.detail }}</span>
+              </a>
+            }
+          </div>
+        </section>
+        <div class="ws-metrics">
+          <app-metric-card label="Learners" value="12,804" context="+3.1% this month" tone="brand"></app-metric-card>
+          <app-metric-card label="Published courses" value="186" context="4 awaiting review" tone="progress"></app-metric-card>
+          <app-metric-card label="Organizations" [value]="d.organizations.length" context="1 on trial"></app-metric-card>
+          <app-metric-card label="Pending moderation" [value]="pendingModeration()" context="Oldest 3 days" tone="warm"></app-metric-card>
+        </div>
+        <div class="ws-grid ws-grid--2">
+          <section class="ws-card" aria-labelledby="health-summary"><h2 id="health-summary" class="ws-card__title">Service health</h2>
+            <ul class="ws-list">@for (service of d.health; track service.service) { <li><span class="ws-item__body"><strong>{{ service.service }}</strong><span>{{ service.detail }}</span></span><app-status-badge [label]="service.status" [tone]="tone[service.status]"></app-status-badge></li> }</ul>
+          </section>
+          <section class="ws-card" aria-labelledby="recent-audit"><div class="ws-spread"><h2 id="recent-audit" class="ws-card__title">Recent privileged activity</h2><a routerLink="/admin/audit" class="ws-small">Open audit log</a></div>
+            <ul class="ws-list">@for (event of d.audit.slice(0, 4); track event.id) { <li><span class="ws-item__body"><strong>{{ event.action }}</strong><span>{{ event.actor }} · {{ event.resource }}</span></span><app-status-badge [label]="event.outcome" [tone]="tone[event.outcome]"></app-status-badge></li> }</ul>
+          </section>
+        </div>
+        <p class="ws-small"><a routerLink="/admin/insights">Open user insights (live data)</a></p>
+      }
+
+      @case ('roles') {
+        <div class="ws-grid">
+          @for (role of d.roles; track role.id) {
+            <article class="ws-card">
+              <div class="ws-spread"><h2 class="ws-card__title">{{ role.name }}</h2>@if (role.system) { <span class="ws-chip">System</span> }</div>
+              <p class="ws-small ws-muted">{{ role.description }}</p>
+              <div class="ws-chips">@for (permission of role.permissions; track permission) { <code class="ws-chip">{{ permission }}</code> }</div>
+              <small class="ws-muted">{{ role.members | number }} members</small>
+            </article>
+          }
+        </div>
+      }
+
+      @case ('moderation') {
+        <div class="ws-stack">
+          @for (item of d.moderation; track item.id) {
+            <article class="ws-card" [class.ws-card--attention]="item.issues.length > 0 && item.status === 'pending'">
+              <div class="ws-spread">
+                <span class="ws-eyebrow">{{ item.kind === 'publish' ? 'Publish request' : item.kind === 'category' ? 'Category request' : 'Learner report' }}</span>
+                <app-status-badge [label]="item.status" [tone]="tone[item.status]"></app-status-badge>
+              </div>
+              <h2 class="ws-card__title">{{ item.course }}</h2>
+              <p class="ws-small ws-muted">{{ item.instructor }} · submitted {{ item.submittedAt | date: 'MMM d, h:mm a' }}</p>
+              @if (item.issues.length) { <ul class="ws-small">@for (issue of item.issues; track issue) { <li>{{ issue }}</li> }</ul> } @else { <p class="ws-small" style="color: var(--success)">Automated policy checks passed.</p> }
+              @if (item.status === 'pending') {
+                <label class="ws-field"><span>Note to instructor</span><input #note placeholder="Required when requesting changes" /></label>
+                <div class="ws-row-flex">
+                  <button type="button" class="button button--primary button--sm" [disabled]="busyId() === item.id" (click)="moderate(item, 'approved', note.value)">Approve</button>
+                  <button type="button" class="button button--sm" [disabled]="busyId() === item.id" (click)="moderate(item, 'changes-requested', note.value)">Request changes</button>
+                  <a class="button button--sm button--quiet" routerLink="/catalog">Preview</a>
+                </div>
+              }
+            </article>
+          }
+        </div>
+      }
+
+      @case ('organizations') {
+        <div class="responsive-table">
+          <table>
+            <thead><tr><th scope="col">Organization</th><th scope="col">Plan</th><th scope="col">Seats</th><th scope="col">Domain</th><th scope="col">Status</th><th scope="col"><span class="sr-only">Action</span></th></tr></thead>
+            <tbody>
+              @for (org of d.organizations; track org.id) {
+                <tr>
+                  <td><strong>{{ org.name }}</strong></td><td>{{ org.plan }}</td>
+                  <td>{{ org.seatsUsed | number }} / {{ org.seats | number }}<div class="progress-track" style="margin-top: 0.25rem" aria-hidden="true"><span [style.width.%]="org.seatsUsed / org.seats * 100"></span></div></td>
+                  <td>{{ org.domain }}</td><td><app-status-badge [label]="org.status" [tone]="tone[org.status]"></app-status-badge></td>
+                  <td><a class="button button--sm" [routerLink]="['/org', org.id, 'dashboard']">Open workspace</a></td>
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      @case ('audit') {
+        <div class="ws-toolbar" role="search">
+          <label class="ws-field"><span>Search actor, action, resource, or correlation ID</span><input type="search" (input)="auditQuery.set($any($event.target).value)" /></label>
+          <label class="ws-field"><span>Outcome</span><select (change)="auditOutcome.set($any($event.target).value)"><option value="">All</option><option value="success">Success</option><option value="denied">Denied</option><option value="failed">Failed</option></select></label>
+        </div>
+        <div class="responsive-table">
+          <table>
+            <caption class="sr-only">Audit events, {{ filteredAudit().length }} results</caption>
+            <thead><tr><th scope="col">Time (UTC)</th><th scope="col">Actor</th><th scope="col">Action</th><th scope="col">Resource</th><th scope="col">Tenant</th><th scope="col">Correlation</th><th scope="col">Outcome</th></tr></thead>
+            <tbody>
+              @for (event of filteredAudit(); track event.id) {
+                <tr><td>{{ event.at | date: 'MMM d, HH:mm' : 'UTC' }}</td><td>{{ event.actor }}</td><td><code>{{ event.action }}</code></td><td>{{ event.resource }}</td><td>{{ event.tenant }}</td><td><code>{{ event.correlationId }}</code></td><td><app-status-badge [label]="event.outcome" [tone]="tone[event.outcome]"></app-status-badge></td></tr>
+              } @empty { <tr><td colspan="7" class="ws-muted">No events match these filters.</td></tr> }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      @case ('integrations') {
+        <div class="ws-grid">
+          @for (integration of d.integrations; track integration.id) {
+            <article class="ws-card">
+              <div class="ws-spread"><span class="ws-chip">{{ integration.type }}</span><app-status-badge [label]="integration.status" [tone]="tone[integration.status]"></app-status-badge></div>
+              <h2 class="ws-card__title">{{ integration.name }}</h2>
+              <dl class="ws-kv"><dt>Last delivery</dt><dd>{{ integration.lastDelivery | date: 'MMM d, HH:mm' }}</dd><dt>Failures (24h)</dt><dd>{{ integration.failures24h }}</dd><dt>Credentials</dt><dd>Stored in vault · ••••</dd></dl>
+              @if (integration.failures24h > 0) { <button type="button" class="button button--sm" [disabled]="busyId() === integration.id" (click)="replay(integration)">Replay failed deliveries</button> }
+            </article>
+          }
+        </div>
+      }
+
+      @case ('jobs') {
+        <div class="responsive-table">
+          <table>
+            <thead><tr><th scope="col">Job</th><th scope="col">Status</th><th scope="col">Last run</th><th scope="col">Duration</th><th scope="col">Next run</th><th scope="col"><span class="sr-only">Action</span></th></tr></thead>
+            <tbody>
+              @for (job of d.jobs; track job.id) {
+                <tr><td><strong>{{ job.name }}</strong></td><td><app-status-badge [label]="job.status" [tone]="tone[job.status]"></app-status-badge></td><td>{{ job.lastRun | date: 'MMM d, HH:mm' }}</td><td>{{ job.durationSeconds }}s</td><td>{{ job.nextRun | date: 'MMM d, HH:mm' }}</td>
+                  <td>@if (job.status === 'failed') { <button type="button" class="button button--sm" [disabled]="busyId() === job.id" (click)="retry(job)">Retry now</button> }</td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      @case ('health') {
+        <div class="ws-grid">
+          @for (service of d.health; track service.service) {
+            <article class="ws-card"><div class="ws-spread"><h2 class="ws-card__title">{{ service.service }}</h2><app-status-badge [label]="service.status" [tone]="tone[service.status]"></app-status-badge></div><strong style="font-size: 1.5rem">{{ service.latencyMs }} ms</strong><span class="ws-small ws-muted">{{ service.detail }}</span></article>
+          }
+        </div>
+      }
+
+      @case ('flags') {
+        <div class="responsive-table">
+          <table>
+            <caption class="sr-only">Feature flags by environment</caption>
+            <thead><tr><th scope="col">Flag</th><th scope="col">Development</th><th scope="col">Staging</th><th scope="col">Production</th></tr></thead>
+            <tbody>
+              @for (flag of d.flags; track flag.key) {
+                <tr>
+                  <td><code>{{ flag.key }}</code><br /><span class="ws-xs ws-muted">{{ flag.description }}</span></td>
+                  @for (env of environments; track env) {
+                    <td><label class="ws-check"><input type="checkbox" [checked]="flag[env]" (change)="toggleFlag(flag, env, $any($event.target))" [attr.aria-label]="flag.key + ' in ' + env" /> {{ flag[env] ? 'On' : 'Off' }}</label></td>
+                  }
+                </tr>
+              }
+            </tbody>
+          </table>
+        </div>
+        <p class="ws-small ws-muted">This console shows server-side flag state. The local preview reads flags from <code>app-config.json</code>.</p>
+      }
+    }
+  }
+</div>

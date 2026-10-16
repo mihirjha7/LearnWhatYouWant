@@ -1,0 +1,43 @@
+@if (isLoading()) {
+  <div class="path-loading skeleton" aria-label="Loading learning path"></div>
+} @else if (path(); as path) {
+  <header class="path-hero" [attr.data-accent]="path.accent">
+    <div>
+      <nav aria-label="Breadcrumb"><a routerLink="/catalog">Catalog</a><span>/</span><span>Learning paths</span></nav>
+      <p>Guided learning path</p>
+      <h1>{{ path.title }}</h1>
+      <span>{{ path.summary }}</span>
+      <dl>
+        <div><dt>Level</dt><dd>{{ path.level }}</dd></div>
+        <div><dt>Courses</dt><dd>{{ path.courseIds.length }}</dd></div>
+        <div><dt>Estimated effort</dt><dd>{{ durationLabel(path.durationMinutes) }}</dd></div>
+      </dl>
+    </div>
+  </header>
+
+  <main class="path-layout">
+    <section aria-labelledby="route-title">
+      <p class="kicker">Your route</p>
+      <h2 id="route-title">Build each capability in order</h2>
+      <ol class="course-route">
+        @for (course of courses(); track course.id; let index = $index) {
+          <li>
+            <span>0{{ index + 1 }}</span>
+            <div><p>{{ course.category }} · {{ course.level }}</p><h3>{{ course.title }}</h3><small>{{ course.summary }}</small></div>
+            <a [routerLink]="['/catalog/courses', course.id]">View course</a>
+          </li>
+        }
+      </ol>
+    </section>
+
+    <aside>
+      <p class="kicker">Skills you will prove</p>
+      <h2>Path outcomes</h2>
+      <ul>@for (skill of path.skills; track skill) { <li>{{ skill }}</li> }</ul>
+      <a routerLink="/register">Start this path</a>
+      <small>You can preview every course before enrolling.</small>
+    </aside>
+  </main>
+} @else {
+  <section class="path-missing"><h1>Learning path not found</h1><p>This path may not be available in the current catalog.</p><a routerLink="/catalog">Browse all courses</a></section>
+}

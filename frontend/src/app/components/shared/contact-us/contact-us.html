@@ -1,0 +1,62 @@
+<!-- HERO -->
+<section class="contact-hero">
+  <h1>Contact Us</h1>
+  <p>We’d love to hear from you. Send a message and we’ll get back soon.</p>
+</section>
+
+<!-- CONTENT -->
+<main class="contact-content">
+  <!-- Left: Form -->
+  <mat-card class="contact-card form-card">
+    <mat-card-title>Send a message</mat-card-title>
+    <mat-card-content>
+      <form (ngSubmit)="onSubmit()" #f="ngForm" class="contact-form" novalidate>
+        <mat-form-field appearance="outline">
+          <mat-label>Your name</mat-label>
+          <input matInput name="name" [(ngModel)]="model.name" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Email</mat-label>
+          <input matInput name="email" [(ngModel)]="model.email" type="email" required />
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="full">
+          <mat-label>Your message</mat-label>
+          <textarea matInput name="message" [(ngModel)]="model.message" rows="5" required></textarea>
+        </mat-form-field>
+
+        <div class="actions">
+          <button mat-raised-button color="accent" [disabled]="isSending">
+            <mat-icon *ngIf="!isSending">send</mat-icon>
+            <mat-icon *ngIf="isSending">hourglass_top</mat-icon>
+            <span>{{ isSending ? 'Sending…' : 'Send message' }}</span>
+          </button>
+          <span class="success" *ngIf="sent">Thanks! We’ll be in touch.</span>
+          <span class="error" *ngIf="error">{{ error }}</span>
+        </div>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <!-- Right: Contact Info -->
+  <mat-card class="contact-card info-card">
+    <mat-card-title>Reach us</mat-card-title>
+    <mat-card-content>
+      <ul class="info-list">
+        <li>
+          <mat-icon color="primary">mail</mat-icon>
+          <a href="mailto:support@olms.app">support@olms.app</a>
+        </li>
+        <li>
+          <mat-icon color="primary">call</mat-icon>
+          <a href="tel:+1800123456">+1 (800) 123‑456</a>
+        </li>
+        <li>
+          <mat-icon color="primary">location_on</mat-icon>
+          <span>Chennai, India</span>
+        </li>
+      </ul>
+    </mat-card-content>
+  </mat-card>
+</main>

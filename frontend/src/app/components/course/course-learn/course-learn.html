@@ -1,0 +1,67 @@
+@if (isLoading()) {
+  <div class="player-loading"><div class="skeleton"></div><p>Preparing your lesson...</p></div>
+} @else if (course(); as course) {
+  <div class="focus-player">
+    <header class="focus-header">
+      <button type="button" class="menu-button" aria-label="Open curriculum" [attr.aria-expanded]="sidebarOpen()" (click)="sidebarOpen.set(!sidebarOpen())"><span></span><span></span><span></span></button>
+      <button type="button" class="exit-button" (click)="exitCourse()"><span aria-hidden="true">&#8592;</span><span>Exit course</span></button>
+      <div class="course-position"><strong>{{ course.title }}</strong><div><div class="progress-track" role="progressbar" aria-label="Course progress" [attr.aria-valuenow]="progress()" aria-valuemin="0" aria-valuemax="100"><span [style.width.%]="progress()"></span></div><span>{{ progress() }}%</span></div></div>
+      <button type="button" class="quiz-button" (click)="goToQuizzes()">Course quizzes</button>
+    </header>
+
+    <button type="button" class="sidebar-backdrop" [class.visible]="sidebarOpen()" aria-label="Close curriculum" (click)="sidebarOpen.set(false)"></button>
+    <div class="player-layout">
+      <aside class="curriculum-sidebar" [class.open]="sidebarOpen()">
+        <div class="curriculum-heading"><p>Course curriculum</p><h2>{{ course.title }}</h2><span>{{ course.lessons.length }} lessons</span></div>
+        <nav aria-label="Course lessons">
+          @for (lesson of course.lessons; track lesson.lessonID; let index = $index) {
+            <button type="button" [class.active]="currentLesson()?.lessonID === lesson.lessonID" [attr.aria-current]="currentLesson()?.lessonID === lesson.lessonID ? 'step' : null" (click)="selectLesson(lesson)">
+              <span class="lesson-status" [class.complete]="isComplete(lesson.lessonID)" aria-hidden="true">{{ isComplete(lesson.lessonID) ? '&#10003;' : index + 1 }}</span>
+              <span class="lesson-copy"><strong>{{ lesson.title }}</strong><small>{{ lesson.lessonType }} · {{ lesson.estimatedTime }} min</small></span>
+            </button>
+          } @empty { <p class="empty-curriculum">No lessons are published yet.</p> }
+        </nav>
+      </aside>
+
+      <main class="lesson-workspace">
+        @if (currentLesson(); as lesson) {
+          <header class="lesson-header"><div><p>Lesson {{ lesson.orderIndex }} of {{ course.lessons.length }}</p><h1>{{ lesson.title }}</h1><span>{{ lesson.lessonType }} · {{ lesson.estimatedTime }} minutes</span></div><div><button type="button" (click)="previousLesson()" [disabled]="!hasPrevious()">Previous</button><button type="button" (click)="nextLesson()" [disabled]="!hasNext()">Next</button></div></header>
+
+          <section class="media-stage" aria-label="Lesson media">
+            @if (currentYoutubeUrl(); as youtubeUrl) {
+              <iframe [src]="youtubeUrl" title="{{ lesson.title }} video" sandbox="allow-scripts allow-same-origin allow-presentation" referrerpolicy="strict-origin-when-cross-origin" allow="encrypted-media; picture-in-picture" allowfullscreen></iframe>
+            } @else if (currentNativeVideoUrl(); as videoUrl) {
+              <video [src]="videoUrl" controls playsinline preload="metadata"><p>Your browser cannot play this video. Use the lesson resources if available.</p></video>
+            } @else if (lesson.videoURL) {
+              <div class="unsupported-media"><p>Unsupported media source</p><h2>This video cannot be opened safely</h2><span>Ask the instructor for an approved HTTPS or YouTube source.</span></div>
+            } @else {
+              <div class="text-lesson-stage"><p>Reading lesson</p><h2>{{ lesson.title }}</h2><span>Continue below for the lesson content and resources.</span></div>
+            }
+          </section>
+
+          <nav class="lesson-tabs" aria-label="Lesson tools">
+            <button type="button" [class.active]="activePanel() === 'overview'" (click)="activePanel.set('overview')">Overview</button>
+            <button type="button" [class.active]="activePanel() === 'transcript'" (click)="activePanel.set('transcript')">Transcript</button>
+            <button type="button" [class.active]="activePanel() === 'notes'" (click)="activePanel.set('notes')">Notes</button>
+            <button type="button" [class.active]="activePanel() === 'resources'" (click)="activePanel.set('resources')">Resources</button>
+          </nav>
+
+          <section class="lesson-panel">
+            @switch (activePanel()) {
+              @case ('overview') { <article class="lesson-content"><p class="panel-kicker">Lesson overview</p><div [innerHTML]="lesson.content || 'This lesson does not include written content yet.'"></div></article> }
+              @case ('transcript') { <div class="panel-empty"><p>Transcript unavailable</p><h2>No transcript has been published for this lesson</h2><span>The media remains available with its provided controls. Contact support if you need an alternative format.</span></div> }
+              @case ('notes') { <form class="note-editor" (ngSubmit)="saveNote()"><label for="lesson-note">Private note for {{ lesson.title }}</label><textarea id="lesson-note" rows="8" [formControl]="note" placeholder="Capture a question, idea, or action for later..."></textarea><div><small>Private to you and listed in Notes. Do not include sensitive information.</small><button type="submit">Save note</button></div></form> }
+              @case ('resources') { @if (lesson.lessonAttachmentUrl || lesson.attachmentURL) { <div class="resource-row"><div><p>Lesson resource</p><strong>{{ lesson.lessonAttachmentFileName || 'Download attachment' }}</strong></div><a [href]="lesson.lessonAttachmentUrl || lesson.attachmentURL" target="_blank" rel="noopener noreferrer">Open resource</a></div> } @else { <div class="panel-empty"><p>No resources yet</p><h2>This lesson has no additional downloads</h2><span>Everything required is available in the lesson content.</span></div> } }
+            }
+          </section>
+
+          <footer class="lesson-footer"><button type="button" (click)="previousLesson()" [disabled]="!hasPrevious()">Previous lesson</button><button type="button" class="complete-button" [disabled]="isComplete(lesson.lessonID)" (click)="markComplete()">{{ isComplete(lesson.lessonID) ? 'Completed' : 'Mark complete' }}</button><button type="button" (click)="nextLesson()" [disabled]="!hasNext()">Next lesson</button></footer>
+        } @else {
+          <div class="panel-empty full-height"><p>Course content</p><h1>No lesson is available yet</h1><span>Return to the course details or try again when content is published.</span></div>
+        }
+      </main>
+    </div>
+  </div>
+} @else {
+  <section class="player-error"><p>Course unavailable</p><h1>We could not open this learning session</h1><span>{{ errorMessage() || 'The course may no longer be available to this account.' }}</span><a routerLink="/student/my-courses">Return to My Learning</a></section>
+}

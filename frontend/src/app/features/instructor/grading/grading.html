@@ -1,0 +1,71 @@
+<div class="ws-page">
+  <app-page-header eyebrow="Assessments" heading="Grading" intro="Rubric-based feedback with draft protection. Use Alt + ↑/↓ to move between submissions.">
+    <label class="ws-check"><input type="checkbox" [checked]="blind()" (change)="blind.set($any($event.target).checked)" /> Blind grading</label>
+  </app-page-header>
+
+  @if (loading()) {
+    <app-skeleton [lines]="3" label="Loading grading queue"></app-skeleton>
+  } @else {
+    <div class="ws-split--three ws-split">
+      <nav class="ws-card ws-card--flush" aria-label="Submission queue">
+        <div class="ws-tabs" role="tablist" aria-label="Queue filter" style="padding-inline: 0.5rem">
+          <button type="button" role="tab" [attr.aria-selected]="statusFilter() === 'open'" (click)="statusFilter.set('open')">To grade</button>
+          <button type="button" role="tab" [attr.aria-selected]="statusFilter() === 'returned'" (click)="statusFilter.set('returned')">Returned</button>
+          <button type="button" role="tab" [attr.aria-selected]="statusFilter() === 'all'" (click)="statusFilter.set('all')">All</button>
+        </div>
+        @for (item of visible(); track item.id; let i = $index) {
+          <button type="button" class="ws-item" [class.active]="selectedId() === item.id" [attr.aria-current]="selectedId() === item.id" (click)="open(item)">
+            <span class="ws-item__body" style="padding: 0.5rem 0.25rem">
+              <strong>{{ learnerName(item, i) }}</strong>
+              <span>{{ item.activity }}</span>
+              <small>{{ item.submittedAt | date: 'MMM d, h:mm a' }} · {{ item.status === 'needs-grading' ? 'Needs grading' : item.status === 'draft-feedback' ? 'Draft feedback' : 'Returned' }}</small>
+            </span>
+          </button>
+        } @empty { <p class="ws-small ws-muted" style="padding: 1rem">Queue is empty.</p> }
+      </nav>
+
+      @if (selected(); as item) {
+        <section class="ws-card" aria-labelledby="submission-title">
+          <span class="ws-eyebrow">{{ item.course }}</span>
+          <h2 id="submission-title">{{ item.activity }}</h2>
+          <p class="ws-small ws-muted">Submitted {{ item.submittedAt | date: 'MMM d, y, h:mm a' }} · due {{ item.dueAt | date: 'MMM d' }}</p>
+          @if (item.type === 'code') { <pre class="ws-code">{{ item.content }}</pre> }
+          @else { <p style="white-space: pre-wrap">{{ item.content }}</p> }
+          @for (file of item.files; track file) {
+            <div class="ws-banner"><strong>{{ file }}</strong><span class="status status--success">Scan clean</span><span class="ws-muted">Preview opens in a sandboxed viewer when connected.</span></div>
+          }
+        </section>
+
+        <aside class="ws-stack" aria-labelledby="rubric-title">
+          <section class="ws-card">
+            <div class="ws-spread"><h2 id="rubric-title" class="ws-card__title">Rubric</h2><strong>{{ total() }}/{{ max() }}</strong></div>
+            @for (criterion of item.rubric; track criterion.id) {
+              <fieldset style="border: 0; margin: 0; padding: 0">
+                <legend class="ws-small"><strong>{{ criterion.criterion }}</strong> · {{ criterion.points }} pts</legend>
+                <div class="ws-row-flex">
+                  @for (level of criterion.levels; track level.label) {
+                    <button type="button" class="button button--sm" [attr.aria-pressed]="scores()[criterion.id] === level.points" (click)="score(criterion.id, level.points)" [disabled]="item.status === 'returned'">{{ level.label }} ({{ level.points }})</button>
+                  }
+                </div>
+              </fieldset>
+            }
+          </section>
+          <section class="ws-card">
+            <label class="ws-field"><span>Feedback to learner</span><textarea rows="6" [value]="feedback()" (input)="setFeedback($any($event.target).value)" [disabled]="item.status === 'returned'"></textarea></label>
+            <div class="ws-chips">@for (template of templates; track template) { <button type="button" class="ws-chip" (click)="insertTemplate(template)" [disabled]="item.status === 'returned'">+ {{ template.trim() }}</button> }</div>
+            @if (dirty()) { <p class="ws-small" style="color: var(--warning)" role="status">Unsaved feedback</p> }
+            @if (item.status !== 'returned') {
+              <div class="ws-row-flex">
+                <button type="button" class="button" [disabled]="saving()" (click)="save(false)">Save draft</button>
+                <button type="button" class="button button--primary" [disabled]="saving() || !complete()" (click)="save(true)">Return grade</button>
+              </div>
+              @if (!complete()) { <small class="ws-muted">Score every criterion to return the grade.</small> }
+            } @else { <app-status-badge label="Returned to learner" tone="success"></app-status-badge> }
+          </section>
+        </aside>
+      } @else {
+        <app-empty-state heading="Nothing selected" message="Choose a submission from the queue."></app-empty-state>
+      }
+    </div>
+  }
+</div>

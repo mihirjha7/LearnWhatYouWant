@@ -1,0 +1,9 @@
+.review-screen > h2 { margin-top: var(--space-2); }
+.review-screen > span { display: block; margin-top: var(--space-2); color: var(--text-muted); }
+.review-screen ol { display: grid; margin: var(--space-6) 0 0; padding: 0; border-top: 1px solid var(--border); list-style: none; }
+.review-screen li { border-bottom: 1px solid var(--border); }
+.review-screen li button { display: grid; width: 100%; min-height: 4rem; grid-template-columns: 1fr auto; align-items: center; gap: var(--space-2); padding: var(--space-3); border: 0; background: transparent; color: var(--text); text-align: left; cursor: pointer; }
+.review-screen li button strong { color: var(--text-muted); font-size: var(--text-sm); }
+.review-screen li button small { grid-column: 1 / -1; color: var(--warning); }
+.irreversible-note { display: block; margin-top: var(--space-3); color: var(--text-muted); }
+.attempt-error-page > p { color: var(--danger); font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; }

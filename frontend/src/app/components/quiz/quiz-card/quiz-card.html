@@ -1,0 +1,37 @@
+<mat-card class="quiz-card" [class.animated]="true">
+  <mat-card-header>
+    <div class="quiz-header">
+      <div class="quiz-icon">
+        <div class="icon-svg brain-icon"></div>
+      </div>
+      <div class="quiz-info">
+        <mat-card-title>{{ quiz.title }}</mat-card-title>
+        <mat-card-subtitle>Quiz ID: {{ quiz.quizID }}</mat-card-subtitle>
+      </div>
+    </div>
+  </mat-card-header>
+
+  <mat-card-content>
+    <div class="quiz-details">
+      <div class="detail-item">
+        <div class="icon-svg medal-icon"></div>
+        <span>{{ quiz.totalMarks }} Marks</span>
+      </div>
+      <div class="detail-item">
+        <div class="icon-svg timer-icon"></div>
+        <span>{{ quiz.timeLimit }} Minutes</span>
+      </div>
+      <div class="detail-item">
+        <div class="icon-svg repeat-icon"></div>
+        <span>{{ quiz.attemptsAllowed }} Attempts</span>
+      </div>
+    </div>
+  </mat-card-content>
+
+  <mat-card-actions>
+    <button mat-raised-button color="primary" (click)="onStartQuiz()" class="start-btn">
+      <div class="icon-svg play-icon"></div>
+      Start Quiz
+    </button>
+  </mat-card-actions>
+</mat-card>

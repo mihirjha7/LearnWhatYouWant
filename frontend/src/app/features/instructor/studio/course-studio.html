@@ -1,0 +1,175 @@
+@if (loading()) {
+  <app-skeleton [lines]="3" label="Opening course studio"></app-skeleton>
+} @else if (course(); as c) {
+  <div class="ws-page">
+    <header class="ws-card" style="position: sticky; top: 0; z-index: 5">
+      <div class="ws-spread">
+        <div class="ws-stack" style="gap: 0.15rem">
+          <a routerLink="/instructor/studio" class="ws-xs">&larr; All courses</a>
+          <h1 style="font-size: 1.5rem">{{ c.title || 'Untitled course' }}</h1>
+          <span class="ws-row-flex ws-small ws-muted">
+            <app-status-badge [label]="lifecycle[c.status].label" [tone]="lifecycle[c.status].tone"></app-status-badge>
+            <span>Version {{ c.version }}</span>
+            <span aria-live="polite">
+              @switch (saveState()) {
+                @case ('saving') { Saving draft… }
+                @case ('unsaved') { Unsaved changes }
+                @case ('conflict') { Conflict detected }
+                @case ('error') { Not saved — will retry on next change }
+                @default { All changes saved {{ c.updatedAt | date: 'h:mm a' }} }
+              }
+            </span>
+          </span>
+        </div>
+        <div class="ws-row-flex">
+          <a class="button" [routerLink]="['/catalog/courses', c.id]" target="_blank" rel="noopener">Preview as learner</a>
+          <button type="button" class="button button--primary" (click)="selectTab('publish')">Publish…</button>
+        </div>
+      </div>
+      @if (saveState() === 'conflict') {
+        <div class="ws-banner ws-banner--danger" role="alert">
+          <span>Someone else saved a newer version of this course. Your recent edits were not saved.</span>
+          <button type="button" class="button button--sm" (click)="reloadLatest()">Load latest version</button>
+        </div>
+      }
+      <div class="ws-tabs" role="tablist" aria-label="Studio sections">
+        @for (item of tabs; track item.id) {
+          <button type="button" role="tab" [attr.aria-selected]="tab() === item.id" (click)="selectTab(item.id)">{{ item.label }}</button>
+        }
+      </div>
+    </header>
+
+    @switch (tab()) {
+      @case ('setup') {
+        <form class="ws-grid ws-grid--2" [formGroup]="form" (submit)="$event.preventDefault()">
+          <section class="ws-card">
+            <h2>Basics</h2>
+            <label class="ws-field"><span>Title</span><input formControlName="title" maxlength="120" />@if (form.controls.title.invalid) { <span class="ws-error">Use at least 8 characters.</span> }</label>
+            <label class="ws-field"><span>Subtitle</span><input formControlName="subtitle" maxlength="160" /></label>
+            <label class="ws-field"><span>Description</span><textarea rows="6" formControlName="description"></textarea><small>{{ form.controls.description.value.length }}/80 minimum characters</small></label>
+          </section>
+          <section class="ws-card">
+            <h2>Audience and access</h2>
+            <div class="ws-grid ws-grid--2">
+              <label class="ws-field"><span>Category</span><input formControlName="category" /><small>New categories need administrator approval.</small></label>
+              <label class="ws-field"><span>Level</span><select formControlName="level"><option>Beginner</option><option>Intermediate</option><option>Advanced</option></select></label>
+              <label class="ws-field"><span>Language</span><select formControlName="language"><option>English</option><option>Spanish</option><option>Hindi</option></select></label>
+              <label class="ws-field"><span>Access</span><select formControlName="access"><option value="free">Free</option><option value="organization">Organization assigned</option><option value="paid" disabled>Paid (not enabled)</option></select></label>
+            </div>
+            <label class="ws-field"><span>Learning outcomes</span><textarea rows="4" formControlName="outcomes"></textarea><small>One measurable outcome per line. Aim for three or more.</small></label>
+            <label class="ws-field"><span>Requirements</span><textarea rows="3" formControlName="requirements"></textarea><small>One per line.</small></label>
+          </section>
+        </form>
+      }
+
+      @case ('curriculum') {
+        @if (removed(); as r) {
+          <div class="ws-banner" role="status"><span>Deleted “{{ r.lesson.title }}”.</span><button type="button" class="button button--sm" (click)="undoDelete()">Undo</button></div>
+        }
+        <div class="ws-split">
+          <div class="ws-stack">
+            @for (section of c.sections; track section.id; let si = $index, sLast = $last) {
+              <section class="ws-card" [attr.aria-label]="'Section ' + (si + 1)">
+                <div class="ws-spread">
+                  <label class="ws-field" style="flex: 1"><span class="sr-only">Section title</span><input [value]="section.title" (change)="renameSection(section.id, $any($event.target).value)" style="font-weight: 700" /></label>
+                  <span class="ws-row-flex">
+                    <button type="button" class="button button--sm" [disabled]="si === 0" (click)="moveSection(si, -1)" [attr.aria-label]="'Move section ' + section.title + ' up'">&uarr;</button>
+                    <button type="button" class="button button--sm" [disabled]="sLast" (click)="moveSection(si, 1)" [attr.aria-label]="'Move section ' + section.title + ' down'">&darr;</button>
+                    @if (!section.lessons.length) { <button type="button" class="button button--sm button--danger" (click)="removeSection(section.id)">Remove</button> }
+                  </span>
+                </div>
+                <ol class="ws-list" style="padding: 0">
+                  @for (lesson of section.lessons; track lesson.id; let li = $index, lLast = $last) {
+                    <li [style.background]="selectedLessonId() === lesson.id ? 'var(--surface-brand)' : null" style="padding-inline: 0.5rem">
+                      <button type="button" class="ws-item__body" style="border: 0; background: none; text-align: left; cursor: pointer; color: inherit" (click)="selectedLessonId.set(lesson.id)" [attr.aria-pressed]="selectedLessonId() === lesson.id">
+                        <strong>{{ li + 1 }}. {{ lesson.title }}</strong>
+                        <span>{{ lesson.type }} · {{ lesson.durationMinutes }} min @if (lesson.media !== 'none' && lesson.media !== 'ready') { · <span [class]="lesson.media === 'failed' ? 'status status--danger' : 'status status--warning'">{{ lesson.media }}</span> }</span>
+                      </button>
+                      <span class="ws-row-flex">
+                        <button type="button" class="button button--sm" [disabled]="li === 0" (click)="moveLesson(section.id, li, -1)" [attr.aria-label]="'Move ' + lesson.title + ' up'">&uarr;</button>
+                        <button type="button" class="button button--sm" [disabled]="lLast" (click)="moveLesson(section.id, li, 1)" [attr.aria-label]="'Move ' + lesson.title + ' down'">&darr;</button>
+                        <button type="button" class="button button--sm" (click)="duplicateLesson(section.id, lesson)" [attr.aria-label]="'Duplicate ' + lesson.title">Duplicate</button>
+                        <button type="button" class="button button--sm button--danger" (click)="deleteLesson(section.id, lesson)" [attr.aria-label]="'Delete ' + lesson.title">Delete</button>
+                      </span>
+                    </li>
+                  } @empty { <li class="ws-small ws-muted">This section is empty. Add a lesson below.</li> }
+                </ol>
+                <label class="ws-field" style="max-width: 16rem"><span>Add content</span>
+                  <select #addType (change)="addLesson(section.id, $any(addType.value)); addType.value = ''">
+                    <option value="">Choose a type…</option>
+                    @for (type of lessonTypes; track type) { <option [value]="type">{{ type }}</option> }
+                  </select>
+                </label>
+              </section>
+            }
+            <button type="button" class="button" (click)="addSection()">Add section</button>
+          </div>
+
+          <aside class="ws-card" aria-labelledby="inspector-title" style="position: sticky; top: 12rem">
+            <h2 id="inspector-title" class="ws-card__title">Inspector</h2>
+            @if (selectedLesson(); as lesson) {
+              <label class="ws-field"><span>Lesson title</span><input [value]="lesson.title" (change)="updateLesson({ title: $any($event.target).value })" /></label>
+              <label class="ws-field"><span>Type</span><select [value]="lesson.type" (change)="updateLesson({ type: $any($event.target).value })">@for (type of lessonTypes; track type) { <option [value]="type">{{ type }}</option> }</select></label>
+              <label class="ws-field"><span>Duration (minutes)</span><input type="number" min="1" max="600" [value]="lesson.durationMinutes" (change)="updateLesson({ durationMinutes: +$any($event.target).value })" /></label>
+              <label class="ws-field"><span>Section</span><select [value]="sectionOf(lesson.id)?.id" (change)="moveLessonToSection(sectionOf(lesson.id)!.id, lesson, $any($event.target).value)">@for (section of c.sections; track section.id) { <option [value]="section.id">{{ section.title }}</option> }</select></label>
+              <label class="ws-check"><input type="checkbox" [checked]="lesson.freePreview" (change)="updateLesson({ freePreview: $any($event.target).checked })" /> Free preview</label>
+              @if (lesson.type === 'video') {
+                <label class="ws-check"><input type="checkbox" [checked]="lesson.hasCaptions" (change)="updateLesson({ hasCaptions: $any($event.target).checked })" /> Captions reviewed</label>
+                <p class="ws-small">Media: <strong>{{ lesson.media }}</strong></p>
+                @if (lesson.media === 'failed') { <button type="button" class="button button--sm" (click)="retryMedia()">Retry processing</button> }
+              }
+            } @else {
+              <p class="ws-small ws-muted">Select a lesson to edit its settings.</p>
+            }
+          </aside>
+        </div>
+      }
+
+      @case ('accessibility') {
+        <section class="ws-card">
+          <h2>Accessibility review</h2>
+          <ul class="ws-list">
+            @for (check of readiness(); track check.id) {
+              @if (check.area === 'accessibility') {
+                <li><span class="ws-item__body"><strong>{{ check.label }}</strong><span>{{ check.detail }}</span></span><span [class]="check.passed ? 'status status--success' : 'status status--warning'">{{ check.passed ? 'Pass' : 'Needs work' }}</span></li>
+              }
+            }
+            @for (lesson of videoLessons(); track lesson.id) {
+              <li><span class="ws-item__body"><strong>{{ lesson.title }}</strong><span>Captions {{ lesson.hasCaptions ? 'reviewed' : 'missing or unreviewed' }} · media {{ lesson.media }}</span></span><button type="button" class="button button--sm" (click)="selectedLessonId.set(lesson.id); selectTab('curriculum')">Fix in curriculum</button></li>
+            }
+          </ul>
+        </section>
+      }
+
+      @case ('publish') {
+        <div class="ws-split">
+          <section class="ws-card" aria-labelledby="readiness-title">
+            <h2 id="readiness-title">Readiness checklist</h2>
+            <ul class="ws-list">
+              @for (check of readiness(); track check.id) {
+                <li>
+                  <span aria-hidden="true" [style.color]="check.passed ? 'var(--success)' : 'var(--warning)'">{{ check.passed ? '✓' : '⚠' }}</span>
+                  <span class="ws-item__body"><strong>{{ check.label }}</strong><span>{{ check.passed ? 'Complete' : check.detail }}</span></span>
+                  @if (!check.passed) { <button type="button" class="button button--sm" (click)="selectTab(check.area === 'setup' ? 'setup' : check.area === 'accessibility' ? 'accessibility' : 'curriculum')">Fix</button> }
+                </li>
+              }
+            </ul>
+          </section>
+          <aside class="ws-stack">
+            <section class="ws-card">
+              <h2 class="ws-card__title">Publish options</h2>
+              @if (!allPassed()) { <p class="ws-banner ws-banner--warning">Resolve checklist items to publish directly. You can still submit for review.</p> }
+              <button type="button" class="button button--primary" [disabled]="!allPassed() || publishing()" (click)="publish('now')">Publish now</button>
+              <label class="ws-field"><span>Schedule for</span><input type="datetime-local" [value]="scheduleAt" (change)="scheduleAt = $any($event.target).value" /></label>
+              <button type="button" class="button" [disabled]="!allPassed() || publishing()" (click)="publish('schedule')">Schedule</button>
+              <button type="button" class="button" [disabled]="publishing()" (click)="publish('review')">Submit for review</button>
+              @if (c.scheduledFor) { <p class="ws-small">Scheduled for {{ c.scheduledFor | date: 'MMM d, y, h:mm a' }}</p> }
+            </section>
+          </aside>
+        </div>
+      }
+    }
+  </div>
+} @else {
+  <app-empty-state tone="error" heading="Course not found" message="It may have been archived, or you may not own it." actionLabel="All courses" actionLink="/instructor/studio"></app-empty-state>
+}

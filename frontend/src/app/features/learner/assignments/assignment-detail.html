@@ -1,0 +1,87 @@
+<div class="ws-page">
+  @if (loading()) {
+    <app-skeleton [lines]="3" label="Loading assignment"></app-skeleton>
+  } @else if (assignment(); as a) {
+    <a routerLink="/student/assignments" class="ws-small">&larr; All assignments</a>
+    <app-page-header [eyebrow]="a.courseTitle" [heading]="a.title" [intro]="'Due ' + (a.dueAt | date: 'EEEE, MMM d, h:mm a') + ' (' + a.timeZone + ')'">
+      <app-status-badge [label]="status[a.status].label" [tone]="status[a.status].tone"></app-status-badge>
+    </app-page-header>
+
+    <div class="ws-split">
+      <div class="ws-stack">
+        <section class="ws-card" aria-labelledby="brief-title">
+          <h2 id="brief-title">Brief</h2>
+          <ul>@for (line of a.instructions; track line) { <li>{{ line }}</li> }</ul>
+          <p class="ws-small ws-muted"><strong>Late policy:</strong> {{ a.latePolicy }}</p>
+          @if (a.resources.length) {
+            <h3 class="ws-small">Resources</h3>
+            <ul class="ws-list">@for (resource of a.resources; track resource.name) { <li><span class="ws-item__body"><strong>{{ resource.name }}</strong><span>{{ resource.sizeKb }} KB</span></span><span class="status status--success">Scanned</span></li> }</ul>
+          }
+        </section>
+
+        @if (a.feedback; as feedback) {
+          <section class="ws-card" aria-labelledby="feedback-title" style="border-left: 4px solid var(--progress)">
+            <p class="ws-eyebrow">Returned {{ feedback.returnedAt | date: 'MMM d' }} by {{ feedback.grader }}</p>
+            <h2 id="feedback-title">Feedback</h2>
+            <p>{{ feedback.summary }}</p>
+          </section>
+        }
+
+        @if (canEdit()) {
+          <form class="ws-card" [formGroup]="form" (ngSubmit)="confirming.set(true)" aria-labelledby="submission-title">
+            <div class="ws-spread"><h2 id="submission-title">Your submission</h2><span class="ws-small ws-muted" aria-live="polite">{{ saveLabel() }}</span></div>
+            @if (a.submissionTypes.includes('text')) {
+              <label class="ws-field"><span>Written response</span><textarea rows="10" formControlName="text"></textarea></label>
+            }
+            @if (a.submissionTypes.includes('link')) {
+              <label class="ws-field"><span>Repository or document link</span><input type="url" formControlName="link" placeholder="https://" [attr.aria-invalid]="form.controls.link.invalid" /><small>Use an HTTPS link your instructor can access.</small>@if (form.controls.link.invalid) { <span class="ws-error">Enter a link starting with https://</span> }</label>
+            }
+            @if (a.submissionTypes.includes('file')) {
+              <label class="ws-field"><span>Files</span><input type="file" multiple (change)="addFiles($event)" accept=".pdf,.md,.docx,.zip,.png,.jpg,.txt" /><small>PDF, Markdown, DOCX, ZIP, PNG, JPG, or TXT · up to 20 MB each. Files are scanned after submission.</small></label>
+              @if (fileError()) { <p class="ws-banner ws-banner--danger" role="alert">{{ fileError() }}</p> }
+              <ul class="ws-list">
+                @for (file of files(); track file.name) {
+                  <li><span class="ws-item__body"><strong>{{ file.name }}</strong><span>{{ file.sizeKb }} KB · ready to upload</span></span><button type="button" class="button button--sm" (click)="removeFile(file.name)" [attr.aria-label]="'Remove ' + file.name">Remove</button></li>
+                }
+              </ul>
+            }
+            @if (confirming()) {
+              <div class="ws-card ws-card--attention" role="alertdialog" aria-labelledby="confirm-assignment">
+                <h3 id="confirm-assignment">Submit version {{ a.history.length + 1 }}?</h3>
+                <p class="ws-small">Your instructor will see this version. {{ a.status === 'resubmission-requested' ? 'This replaces your earlier submission for grading.' : 'You can only resubmit if your instructor requests it.' }}</p>
+                <div class="ws-row-flex"><button type="button" class="button" (click)="confirming.set(false)">Keep editing</button><button type="button" class="button button--primary" [disabled]="submitting()" (click)="submit()">{{ submitting() ? 'Submitting…' : 'Confirm submission' }}</button></div>
+              </div>
+            } @else {
+              <div class="ws-row-flex"><button type="submit" class="button button--primary" [disabled]="form.invalid">Submit assignment</button></div>
+            }
+          </form>
+        }
+      </div>
+
+      <aside class="ws-stack">
+        <section class="ws-card" aria-labelledby="rubric-title">
+          <div class="ws-spread"><h2 id="rubric-title" class="ws-card__title">Rubric</h2><span class="ws-small ws-muted">{{ totalPoints() }} pts</span></div>
+          @for (criterion of a.rubric; track criterion.id) {
+            <details>
+              <summary><strong>{{ criterion.criterion }}</strong> · {{ criterion.points }} pts @if (criterionScore(criterion.id); as score) { <span class="status status--success">{{ score.score }}/{{ criterion.points }}</span> }</summary>
+              <p class="ws-small ws-muted">{{ criterion.description }}</p>
+              <ul class="ws-small">@for (level of criterion.levels; track level.label) { <li><strong>{{ level.label }} ({{ level.points }})</strong>: {{ level.description }}</li> }</ul>
+              @if (criterionScore(criterion.id); as score) { <p class="ws-small"><em>Grader:</em> {{ score.comment }}</p> }
+            </details>
+          }
+        </section>
+        <section class="ws-card" aria-labelledby="history-title">
+          <h2 id="history-title" class="ws-card__title">Submission history</h2>
+          <ul class="ws-list">
+            @for (version of a.history; track version.version) {
+              <li><span class="ws-item__body"><strong>Version {{ version.version }}</strong><span>{{ version.submittedAt | date: 'MMM d, h:mm a' }}@if (version.score !== undefined) { · {{ version.score }}/{{ a.points }} }</span>
+                @for (file of version.files; track file.name) { <small>{{ file.name }} — {{ file.scanStatus === 'pending' ? 'scan pending' : file.scanStatus }}</small> }</span></li>
+            } @empty { <li class="ws-small ws-muted">Nothing submitted yet.</li> }
+          </ul>
+        </section>
+      </aside>
+    </div>
+  } @else {
+    <app-empty-state tone="error" heading="Assignment not found" actionLabel="All assignments" actionLink="/student/assignments"></app-empty-state>
+  }
+</div>

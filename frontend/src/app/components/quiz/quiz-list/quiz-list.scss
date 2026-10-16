@@ -1,0 +1,251 @@
+/* * "Sober & Eye-Soothing" Theme - V2 (Finished)
+ * Includes:
+ * - "Vibrant Glassmorphism" Sticky Header
+ * - Staggered Card Entrance Animation
+ * - Smooth State Transitions (Loading -> Content)
+ * - Interactive Hover & Focus States
+ * - SVG Empty State
+ */
+
+// --- Keyframe Animations ---
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+// --- Color Palette ---
+$page-bg: #f4f7f9;
+$content-bg: #ffffff;
+$text-primary: #2c3e50;
+$text-secondary: #8a9bad;
+$accent-color: #4A89DC;
+$border-color: #e6e9ed;
+
+// --- Main Page Container ---
+.quiz-list-container {
+  min-height: 100vh;
+  background: $page-bg;
+  padding: 40px 20px;
+  box-sizing: border-box;
+}
+
+// --- Header (Now with Vibrant Glassmorphism) ---
+.header {
+  max-width: 1200px;
+  margin: 0 auto 40px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 20px;
+
+  &.glassy {
+    position: sticky;
+    top: 10px;
+    z-index: 100;
+    
+    background: rgba($page-bg, 0.8);
+    // *** IMPROVEMENT: Added saturate() for a more vibrant "Apple-style" glass ***
+    backdrop-filter: blur(12px) saturate(180%);
+    
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.03);
+    
+    margin-top: -30px;
+    margin-bottom: 30px;
+  }
+
+  .back-btn {
+    background: transparent;
+    color: $text-secondary;
+    border-radius: 50%;
+    // *** IMPROVEMENT: Smooth transition for hover ***
+    transition: background 0.2s ease, color 0.2s ease;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.04);
+      color: $text-primary;
+    }
+  }
+  
+  .header-content {
+    flex: 1;
+    .title {
+      font-size: 36px;
+      font-weight: 700;
+      color: $text-primary;
+      margin: 0;
+    }
+    .subtitle {
+      font-size: 18px;
+      color: $text-secondary;
+      margin: 4px 0 0;
+      font-weight: 400;
+    }
+  }
+}
+
+// --- Main Content "Sheet" ---
+.content-wrapper {
+  max-width: 1200px;
+  margin: 0 auto;
+  background: $content-bg;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  border: 1px solid $border-color;
+  padding: 40px;
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+
+  // *** IMPROVEMENT: Smooth fade-in for state changes ***
+  .loading-container,
+  .quiz-grid,
+  .empty-state {
+    animation: fadeIn 0.4s ease-out;
+  }
+}
+
+// --- Loading State ---
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  color: $text-secondary;
+  mat-spinner {
+    margin-bottom: 20px;
+  }
+  p {
+    font-size: 18px;
+    font-weight: 500;
+  }
+}
+
+// --- Quiz Grid (With Animations & Hover) ---
+.quiz-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 28px;
+
+  // *** IMPROVEMENT: Activate the staggered entrance animation ***
+  app-quiz-card {
+    // 1. Define the animation
+    animation: fadeInUp 0.5s ease-out forwards;
+    // 2. Start hidden (animation-delay in HTML will handle the stagger)
+    opacity: 0;
+    // 3. Add transitions for hover/focus
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    // *** IMPROVEMENT: Add interactive hover/focus "lift" ***
+    &:hover,
+    &:focus-within { // focus-within is great for accessibility
+      transform: translateY(-4px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+    }
+  }
+}
+
+// --- Empty State (Updated) ---
+.empty-state {
+  margin: 60px auto;
+  text-align: center;
+  padding: 40px;
+  max-width: 500px;
+
+  .empty-state-illustration {
+    margin-bottom: 24px;
+    svg {
+      width: 100%;
+      max-width: 250px;
+      height: auto;
+    }
+  }
+
+  h2 {
+    font-size: 26px;
+    color: $text-primary;
+    margin: 0 0 12px;
+  }
+
+  p {
+    font-size: 16px;
+    color: $text-secondary;
+    margin: 0 0 30px;
+    line-height: 1.6;
+  }
+  
+  button {
+    height: 48px;
+    padding: 0 32px;
+    font-size: 16px;
+    border-radius: 24px;
+    // *** IMPROVEMENT: Add smooth transitions ***
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+
+    &:hover {
+      // Add a subtle glow/shadow on hover
+      box-shadow: 0 4px 12px rgba($accent-color, 0.2);
+    }
+  }
+}
+
+// --- Responsive Adjustments ---
+@media (max-width: 768px) {
+  .quiz-list-container {
+    padding: 20px 0;
+  }
+
+  .header {
+    margin-bottom: 20px;
+    padding: 0 10px;
+
+    &.glassy {
+      top: 0;
+      margin-top: 0;
+      border-radius: 0;
+      padding-top: 10px;
+      padding-bottom: 10px;
+    }
+    
+    .header-content .title {
+      font-size: 26px;
+    }
+    .header-content .subtitle {
+      font-size: 16px;
+    }
+  }
+
+  .content-wrapper {
+    padding: 24px 20px;
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+  }
+
+  .quiz-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .empty-state {
+    padding: 20px 10px;
+    margin: 40px auto;
+  }
+}

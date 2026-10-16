@@ -1,0 +1,212 @@
+:host {
+  position: sticky;
+  z-index: 100;
+  top: 0;
+  display: block;
+}
+
+.public-header {
+  border-bottom: 1px solid var(--border);
+  background: color-mix(in srgb, var(--surface) 92%, transparent);
+  backdrop-filter: blur(16px);
+}
+
+.header-inner {
+  display: flex;
+  width: min(calc(100% - 2rem), var(--content-max));
+  min-height: var(--header-height);
+  align-items: center;
+  gap: var(--space-6);
+  margin-inline: auto;
+}
+
+.brand {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  color: var(--text);
+  font-size: var(--text-lg);
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.brand-mark {
+  display: grid;
+  width: 2.35rem;
+  height: 2.35rem;
+  place-items: center;
+  border-radius: var(--radius-md);
+  background: var(--brand);
+  color: var(--brand-contrast);
+}
+
+.desktop-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+}
+
+.desktop-nav a,
+.search-link,
+.sign-in {
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-md);
+  color: var(--text-soft);
+  font-size: var(--text-sm);
+  font-weight: 500;
+  text-decoration: none;
+}
+
+.desktop-nav a:hover,
+.desktop-nav a.active,
+.search-link:hover,
+.sign-in:hover {
+  background: var(--surface-subtle);
+  color: var(--text);
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.theme-button,
+.account-popover button {
+  min-height: 2.5rem;
+  padding: 0 var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  color: var(--text-soft);
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.create-account {
+  display: inline-flex;
+  min-height: 2.65rem;
+  align-items: center;
+  padding: 0 var(--space-4);
+  border-radius: var(--radius-md);
+  background: var(--brand);
+  color: var(--brand-contrast);
+  font-size: var(--text-sm);
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.account-menu,
+.mobile-menu {
+  position: relative;
+}
+
+.account-menu summary,
+.mobile-menu summary {
+  display: grid;
+  width: 2.65rem;
+  height: 2.65rem;
+  place-items: center;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  cursor: pointer;
+  list-style: none;
+}
+
+.account-menu summary::-webkit-details-marker,
+.mobile-menu summary::-webkit-details-marker {
+  display: none;
+}
+
+.account-menu summary img,
+.account-menu summary > span {
+  display: grid;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.account-menu summary > span {
+  background: var(--progress-soft);
+  color: var(--progress);
+  font-weight: 700;
+}
+
+.account-popover,
+.mobile-menu nav {
+  position: absolute;
+  top: calc(100% + var(--space-2));
+  right: 0;
+  display: grid;
+  min-width: 13rem;
+  gap: var(--space-1);
+  padding: var(--space-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-md);
+  background: var(--surface);
+  box-shadow: var(--shadow-md);
+}
+
+.account-popover p {
+  padding: var(--space-2) var(--space-3);
+  color: var(--text);
+  font-size: var(--text-sm);
+  font-weight: 600;
+}
+
+.account-popover a,
+.account-popover button,
+.mobile-menu nav a {
+  width: 100%;
+  padding: var(--space-2) var(--space-3);
+  border: 0;
+  background: transparent;
+  color: var(--text-soft);
+  font-size: var(--text-sm);
+  text-align: left;
+  text-decoration: none;
+}
+
+.account-popover a:hover,
+.account-popover button:hover,
+.mobile-menu nav a:hover {
+  background: var(--surface-subtle);
+}
+
+.mobile-menu {
+  display: none;
+}
+
+.mobile-menu summary {
+  align-content: center;
+  gap: 0.22rem;
+}
+
+.mobile-menu summary span {
+  width: 1.2rem;
+  height: 2px;
+  background: var(--text);
+}
+
+@media (max-width: 56rem) {
+  .desktop-nav,
+  .search-link,
+  .theme-button {
+    display: none;
+  }
+
+  .mobile-menu {
+    display: block;
+  }
+}
+
+@media (max-width: 36rem) {
+  .sign-in,
+  .create-account {
+    display: none;
+  }
+}

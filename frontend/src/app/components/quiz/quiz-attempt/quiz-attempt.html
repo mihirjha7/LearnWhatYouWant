@@ -1,0 +1,32 @@
+@if (loading()) {
+  <div class="attempt-loading"><div class="skeleton"></div><p>Preparing your assessment securely...</p></div>
+} @else if (quizData(); as quiz) {
+  <div class="attempt-shell">
+    <header class="attempt-header">
+      <button type="button" class="exit-attempt" (click)="saveAndExit()"><span aria-hidden="true">&#8592;</span> Save and exit</button>
+      <div><p>Assessment</p><h1>{{ quiz.title }}</h1></div>
+      <div class="attempt-status"><span [class.warning]="timeRemaining() !== null && timeRemaining()! < 60">{{ timerDisplay() }}</span><small aria-live="polite">{{ autosaveStatus() === 'saved' ? 'Answers saved' : autosaveStatus() === 'saving' ? 'Saving...' : 'Save unavailable' }}</small></div>
+    </header>
+
+    <div class="attempt-progress"><div class="progress-track" role="progressbar" aria-label="Assessment progress" [attr.aria-valuenow]="progress()" aria-valuemin="0" aria-valuemax="100"><span [style.width.%]="progress()"></span></div><span>{{ answeredCount() }} of {{ questions().length }} answered</span></div>
+
+    <div class="attempt-layout">
+      <aside class="question-navigator"><div><p>Question navigator</p><button type="button" (click)="openReview()">Review all</button></div><nav aria-label="Assessment questions">@for (question of questions(); track question.questionID; let index = $index) { <button type="button" [class.current]="currentQuestionIndex() === index && mode() === 'attempt'" [class.answered]="isAnswered(question.questionID)" [class.flagged]="isFlagged(question.questionID)" [attr.aria-label]="'Question ' + (index + 1) + (isAnswered(question.questionID) ? ', answered' : ', unanswered')" (click)="navigateToQuestion(index)">{{ index + 1 }}</button> }</nav><div class="navigator-key"><span><i class="answered"></i>Answered</span><span><i class="flagged"></i>Flagged</span></div></aside>
+
+      <main class="attempt-main">
+        @if (mode() === 'review') {
+          <section class="review-screen" aria-labelledby="review-title"><p>Final review</p><h2 id="review-title">Check your attempt before submitting</h2><span>{{ unansweredCount() }} unanswered · {{ flaggedQuestionIds().size }} flagged</span><ol>@for (question of questions(); track question.questionID; let index = $index) { <li><button type="button" (click)="navigateToQuestion(index)"><span>Question {{ index + 1 }}</span><strong>{{ isAnswered(question.questionID) ? 'Answered' : 'Unanswered' }}</strong>@if (isFlagged(question.questionID)) { <small>Flagged for review</small> }</button></li> }</ol>@if (errorMessage()) { <div class="attempt-error" role="alert">{{ errorMessage() }}</div> }<div class="review-actions"><button type="button" (click)="navigateToQuestion(0)">Return to questions</button><button type="button" class="submit-attempt" [disabled]="submitting()" (click)="submitAttempt()">{{ submitting() ? 'Submitting securely...' : 'Submit final attempt' }}</button></div><small class="irreversible-note">After submission, answers cannot be changed. The server calculates the authoritative score.</small></section>
+        } @else if (currentQuestion(); as question) {
+          <section class="question-panel"><div class="question-heading"><div><p>Question {{ currentQuestionIndex() + 1 }} of {{ questions().length }}</p><h2>{{ question.questionText }}</h2><span>{{ question.marks }} {{ question.marks === 1 ? 'mark' : 'marks' }}</span></div><button type="button" [class.active]="isFlagged(question.questionID)" (click)="toggleFlag()">{{ isFlagged(question.questionID) ? 'Flagged' : 'Flag for review' }}</button></div>
+            @if (question.options.length) { <fieldset class="answer-options"><legend>Select one answer</legend>@for (option of question.options; track option; let index = $index) { <label [class.selected]="selectedResponse() === option"><input type="radio" [name]="'question-' + question.questionID" [value]="option" [checked]="selectedResponse() === option" (change)="selectResponse(option)"><span class="option-letter" aria-hidden="true">{{ 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.charAt(index) }}</span><span>{{ option }}</span></label> }</fieldset> }
+            @else { <div class="written-answer"><label for="written-response">Your answer</label><textarea id="written-response" rows="7" [value]="selectedResponse()" (input)="selectResponse($any($event.target).value)" placeholder="Write a concise response..."></textarea></div> }
+            @if (errorMessage()) { <div class="attempt-error" role="alert">{{ errorMessage() }}</div> }
+            <footer class="question-actions"><button type="button" (click)="previousQuestion()" [disabled]="currentQuestionIndex() === 0">Previous</button><button type="button" class="next-question" (click)="nextQuestion()">{{ currentQuestionIndex() === questions().length - 1 ? 'Review attempt' : 'Save and next' }}</button></footer>
+          </section>
+        } @else { <div class="empty-state"><h2>No questions available</h2><p>This assessment does not have published questions yet.</p><button type="button" class="button" (click)="saveAndExit()">Return to quizzes</button></div> }
+      </main>
+    </div>
+  </div>
+} @else {
+  <section class="attempt-error-page"><p>Assessment unavailable</p><h1>We could not open this attempt</h1><span>{{ errorMessage() }}</span><button type="button" (click)="saveAndExit()">Return to quiz list</button></section>
+}

@@ -1,0 +1,90 @@
+/* Widget-specific styles extracted from instructor-dashboard.css */
+    .summary-card {
+      background: white;
+      border-radius: 12px;
+      padding: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s;
+    }
+
+    .card-icon-group {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .icon-circle {
+      width: 50px;
+      height: 50px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2em;
+      color: white;
+      flex-shrink: 0;
+    }
+    
+    /* Ensure mat-icon size is appropriate for the circle */
+    .icon-circle mat-icon {
+        font-size: 28px; 
+        width: 28px;
+        height: 28px;
+    }
+
+    /* Color classes for icon/circle backgrounds */
+    .blue { background-color: #007bff; }
+    .green { background-color: #28a745; }
+    .cyan { background-color: #17a2b8; }
+    .orange { background-color: #fd7e14; }
+
+    .card-text {
+      flex-grow: 1;
+      margin-right: 15px;
+    }
+
+    .card-title {
+      font-size: 0.9em;
+      color: #6c757d;
+      margin: 0;
+    }
+
+    .card-value {
+      font-size: 1.5em;
+      font-weight: bold;
+      color: #343a40;
+      display: block;
+      margin-top: 5px; 
+    }
+
+    .card-trend {
+      font-size: 0.8em;
+      font-weight: 500;
+      display: block;
+      margin-top: 5px;
+    }
+
+    .positive { color: #28a745; }
+    .negative { color: #dc3545; }
+
+    /* Avatar styles preserved */
+    .card-avatars {
+        display: flex;
+        align-items: center;
+        font-size: 1.5em;
+        color: #343a40;
+        margin-top: 15px;
+    }
+    .avatar {
+        background-color: #e9ecef;
+        width: 30px;
+        height: 30px;
+        border-radius: 50%;
+        text-align: center;
+        line-height: 30px;
+        font-size: 1em;
+        margin-left: -10px;
+        border: 2px solid white;
+    }

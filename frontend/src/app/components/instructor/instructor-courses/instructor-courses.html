@@ -1,0 +1,96 @@
+<section class="top-courses-table">
+  <header>
+    <h2>Courses</h2>
+    <div class="header-actions">
+        <button 
+          class="create-course-btn"
+          (click)="createCourse()">
+            <mat-icon class="mr-1 text-base">add_circle_outline</mat-icon>
+            Create Course
+        </button>
+    </div>
+  </header>
+
+  <div class="table-scroll-wrapper">
+    <div *ngIf="isLoading" class="loading-indicator">
+      <mat-icon class="spinner">loop</mat-icon> Loading courses...
+    </div>
+
+    <table *ngIf="!isLoading && courseList.length > 0">
+      <thead>
+        <tr>
+          <th>Course Category</th>
+          <th>Course Name</th>
+          <th>Lessons</th>
+          <th>Total Time</th>
+          <th>Status</th>
+          <th>Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        <ng-container *ngFor="let course of courseList; trackBy: trackByCourseName">
+          <!-- Course Row -->
+          <tr>
+            <td>{{ course.category }}</td>
+            <td>{{ course.name }}</td>
+            <td>{{ course.lessons }}</td>
+            <td>{{ course.totalTime | durationFormat }}</td>
+            <td>
+              <span class="status-pill" [ngClass]="getStatusClass(course.status)">
+                {{ course.status }}
+              </span>
+            </td>
+            <td class="action-buttons">
+              <button mat-icon-button class="action-btn blue" (click)="toggleLessonForm(course)">
+                <mat-icon>play_lesson</mat-icon>
+              </button>
+              <button mat-icon-button class="action-btn red" (click)="createQuiz(course)">
+                <mat-icon>quiz</mat-icon>
+              </button>
+        
+            </td>
+          </tr>
+
+          <!-- Add Lesson Form Row -->
+          <tr *ngIf="selectedCourse?.courseID === course.courseID">
+            <td colspan="6">
+              <form (ngSubmit)="submitLesson()" #lessonForm="ngForm">
+                <input type="hidden" [(ngModel)]="lesson.courseID" name="courseID" [value]="course.courseID" />
+
+                <div class="lesson-form-grid">
+                  <div class="form-group">
+
+                    <input [(ngModel)]="lesson.title" name="title" placeholder="Lesson Title" required />
+                    <textarea [(ngModel)]="lesson.content" name="content" placeholder="Lesson Content"></textarea>
+                    
+                    <input [(ngModel)]="lesson.lessonType" name="lessonType" placeholder="Lesson Type" readonly/>
+                    
+                    <input [(ngModel)]="lesson.estimatedTime" name="estimatedTime" type="number" placeholder="Estimated Time (min)" />
+                    
+                    <input [(ngModel)]="lesson.videoURL" name="videoURL" placeholder="Video URL" *ngIf="lesson.lessonType === 'Video'" />
+                    
+                    <!-- <label>
+                      <input type="checkbox" [(ngModel)]="lesson.includeDocument" name="includeDocument" />
+                      Include Document
+                    </label>
+                    
+                    <input type="file" (change)="onFileSelected($event)" *ngIf="lesson.includeDocument" /> -->
+                  </div>
+                  <div class="form-buttons">
+                    
+                    <button type="button" (click)="closeLessonForm(course)">Cancel</button>
+                    <button type="submit">Add Lesson</button>
+                  </div>
+                </div>
+              </form>
+            </td>
+          </tr>
+        </ng-container>
+      </tbody>
+    </table>
+
+    <div *ngIf="!isLoading && courseList.length === 0" class="no-data-message">
+      No courses found for this instructor.
+    </div>
+  </div>
+</section>

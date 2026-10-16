@@ -1,0 +1,177 @@
+/* --- Global Variables & Overrides (Assumes Parent Dashboard Context) --- */
+:host {
+    --primary-color: #1976D2; /* Deeper Material Blue */
+    --secondary-text: #546E7A; /* Darker Blue-Gray for better caption contrast */
+    --card-bg: #ffffff;
+    --star-color: #FFB300; /* Richer Amber Gold for ratings */
+    --rank-bg: #E3F2FD; /* Very Light Primary Blue 50 Background for badge */
+    --hover-bg: #F5F5F5; /* Subtle Neutral Gray Tint on Hover */
+}
+
+/* --- Top Instructors Card Styles --- */
+.instructor-card {
+    /* mat-card handles border-radius and elevation/box-shadow */
+    background: var(--card-bg);
+    display: flex;
+    flex-direction: column;
+    padding: 24px;
+}
+
+.instructor-card mat-card-title {
+    font-size: 1.5rem; /* More prominent, bold title */
+    font-weight: 700; 
+    color: #34495E; /* Near-black for title contrast */
+    padding-bottom: 8px;
+    border-bottom: 1px solid #E0E0E0; /* Cleaner separator */
+}
+
+.instructor-content-container {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-top: 10px;
+}
+
+.instructor-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0; 
+}
+
+.instructor-item {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 16px 8px; /* Increased vertical padding for better spacing */
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-radius: 8px; /* Slightly more rounded corners for item */
+    cursor: pointer;
+    transition: background-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.instructor-item:last-child {
+    border-bottom: none;
+}
+
+/* Enhanced Hover Effect: Subtle background change + soft lift shadow */
+.instructor-item:hover {
+    background-color: var(--hover-bg);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08); /* More subtle shadow for lift */
+    transform: none; 
+}
+
+.profile-avatar {
+    position: relative;
+    display: grid;
+    flex: 0 0 54px;
+    width: 54px;
+    height: 54px;
+    place-items: center;
+    overflow: hidden;
+    border: 3px solid var(--primary-color);
+    border-radius: 50%;
+    background: var(--rank-bg);
+    color: var(--primary-color);
+    font-weight: 700;
+}
+
+.profile-pic {
+    position: absolute;
+    inset: 0;
+    width: 54px; /* Slightly larger image */
+    height: 54px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 0;
+    box-shadow: none; 
+}
+
+.details {
+    flex-grow: 1;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.name-rank {
+    display: flex;
+    flex-direction: column;
+}
+
+.name-rank span {
+    /* Rank Badge Style - Prominent pill */
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 16px;
+    background-color: var(--rank-bg); 
+    color: var(--primary-color);
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+    /* Removed explicit rgba border and relied on light rank-bg */
+    border: none;
+    width: fit-content; /* Ensures the badge only takes the necessary width */
+}
+
+.name-rank h4 {
+    margin: 0;
+    font-size: 1.1rem; /* Larger, more dominant name */
+    font-weight: 600;
+    color: #212529; /* Dark text for primary name visibility */
+}
+
+.stats {
+    text-align: right;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 4px; /* Space between rating and students count */
+}
+
+.rating {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    color: var(--star-color);
+}
+
+.star-icon {
+    font-size: 18px; /* Slightly larger star icon */
+    width: 18px;
+    height: 18px;
+    margin-right: 4px;
+}
+
+.rating-value {
+    font-weight: 700; /* Very bold rating value */
+    color: #212529; /* Dark text for contrast */
+    font-size: 1.1rem; /* Matches the name font size for visual weight */
+}
+
+.students {
+    font-size: 0.8rem; /* Slightly larger for better readability */
+    color: var(--secondary-text);
+    font-weight: 500;
+}
+
+/* Loading and Empty States */
+.loading-state, .empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 50px 0;
+    color: var(--secondary-text);
+    text-align: center;
+}
+
+.empty-state mat-icon {
+    font-size: 56px; 
+    width: 56px;
+    height: 56px;
+    margin-bottom: 15px;
+    color: #ADBAC7; /* Slightly bluer-gray for empty state */
+}

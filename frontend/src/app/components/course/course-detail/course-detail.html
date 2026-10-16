@@ -1,0 +1,197 @@
+<!-- src/app/features/course-detail/course-detail.component.html -->
+
+<!-- Loading -->
+<mat-card *ngIf="isLoading(); else content">
+  <mat-card-title>Loading course…</mat-card-title>
+  <mat-card-content>
+    <progress class="loading-progress" aria-label="Loading"></progress>
+  </mat-card-content>
+</mat-card>
+
+<ng-template #content>
+  <ng-container *ngIf="course() as c; else error">
+    <!-- HERO -->
+    <header
+      class="ud-hero"
+      [style.--hero-bg]="c.thumbnailURL ? 'url(' + c.thumbnailURL + ')' : 'none'"
+      role="banner"
+    >
+      <div class="ud-hero-overlay"></div>
+
+      <div class="ud-hero-inner">
+        <h1 class="ud-title">{{ c.title }}</h1>
+
+        <div class="ud-meta">
+          <span *ngIf="c.level" class="ud-chip">{{ c.level }}</span>
+          <span *ngIf="c.language" class="ud-chip">{{ c.language }}</span>
+          <span *ngIf="c.duration" class="ud-chip">{{ c.duration }}h</span>
+          <span *ngIf="c.rating" class="ud-chip ud-chip-rating">
+            ★ {{ c.rating }} <span class="ud-muted">({{ c.reviewCount || 0 }})</span>
+          </span>
+        </div>
+
+        <!-- <div class="ud-submeta" *ngIf="c.instructorName || c.lastUpdated">
+          <span *ngIf="c.instructorName">By {{ c.instructorName }}</span>
+          <span *ngIf="c.lastUpdated"> • Updated {{ c.lastUpdated | date:'MMM d, y' }}</span>
+        </div> -->
+      </div>
+    </header>
+
+    <!-- MAIN LAYOUT -->
+    <div class="ud-layout">
+      <!-- LEFT: MAIN CONTENT -->
+      <main class="ud-main">
+        <!-- About -->
+        <section class="ud-section" *ngIf="c.description">
+          <h2 class="ud-h2">About this course</h2>
+          <p class="ud-desc">{{ c.description }}</p>
+        </section>
+
+        <!-- What you'll learn (optional: derives from syllabus lines or summary) -->
+        <section class="ud-section" *ngIf="c.syllabus">
+          <h2 class="ud-h2">What you'll learn</h2>
+          <ul class="ud-learn-grid">
+            <li *ngFor="let line of (c.syllabus.split('\n') | slice:0:8)" class="ud-learn-item">
+              <mat-icon aria-hidden="true">check_circle</mat-icon>
+              <span>{{ line }}</span>
+            </li>
+          </ul>
+        </section>
+
+        <!-- Curriculum / Lessons -->
+        <section class="ud-section">
+          <div class="ud-curriculum-header">
+            <h2 class="ud-h2">Course content</h2>
+            <div class="ud-curriculum-stats" *ngIf="c.lessons?.length">
+              {{ c.lessons.length }} lectures
+              <span *ngIf="c.duration"> • {{ c.duration }} total hours</span>
+            </div>
+          </div>
+
+          <!-- If you have sections, you can group lessons by section; for now we show a single accordion -->
+          <mat-accordion class="ud-accordion" multi>
+            <mat-expansion-panel expanded>
+              <mat-expansion-panel-header>
+                <mat-panel-title>All Lessons</mat-panel-title>
+                <mat-panel-description>
+                  Browse lessons and preview available ones
+                </mat-panel-description>
+              </mat-expansion-panel-header>
+
+              <div class="ud-lesson-row"
+                   *ngFor="let l of c.lessons; trackBy: trackLesson">
+                <div class="ud-lesson-left">
+                  <mat-icon class="ud-lesson-icon"
+                            [ngClass]="{'locked': !isEnrolled()}">
+                    {{ isEnrolled() ? 'play_circle' : 'lock' }}
+                  </mat-icon>
+
+                  <div class="ud-lesson-text">
+                    <div class="ud-lesson-title">
+                      {{ l.orderIndex }}. {{ l.title }}
+                    </div>
+                    <div class="ud-lesson-meta">
+                      {{ l.lessonType }} • {{ l.estimatedTime }} min
+                    </div>
+                  </div>
+                </div>
+
+                <div class="ud-lesson-right">
+                  <button mat-stroked-button color="primary"
+                          *ngIf="isEnrolled(); else previewHint"
+                          (click)="goToLearning()"
+                          aria-label="Play lesson">
+                    <mat-icon>play_arrow</mat-icon>
+                    Play
+                  </button>
+                  <ng-template #previewHint>
+                    <button mat-stroked-button color="accent"
+                            [disabled]="true"
+                            matTooltip="Enroll to watch"
+                            aria-label="Preview disabled">
+                      <mat-icon>visibility</mat-icon>
+                      Preview
+                    </button>
+                  </ng-template>
+                  <span class="ud-lesson-duration">{{ l.estimatedTime }}m</span>
+                </div>
+              </div>
+            </mat-expansion-panel>
+          </mat-accordion>
+
+          <!-- Empty -->
+          <div class="ud-empty" *ngIf="!c.lessons?.length">
+            <mat-icon>info</mat-icon>
+            Lessons will appear here once published.
+          </div>
+        </section>
+      </main>
+
+      <!-- RIGHT: STICKY SIDEBAR -->
+      <aside class="ud-sidebar">
+        <mat-card class="ud-sticky-card">
+          <div class="ud-thumb" *ngIf="c.thumbnailURL">
+            <img [src]="c.thumbnailURL" [alt]="c.title" />
+            <button class="ud-thumb-play" mat-fab color="primary" (click)="isEnrolled() ? goToLearning() : onEnroll()" aria-label="Play or enroll">
+              <mat-icon>{{ isEnrolled() ? 'play_arrow' : 'school' }}</mat-icon>
+            </button>
+          </div>
+
+          <mat-card-content>
+            <!-- <div class="ud-price" *ngIf="c.price">
+              <span class="ud-price-now">{{ c.price | currency:'USD':'symbol' }}</span>
+              <span class="ud-price-note" *ngIf="c.discount"> {{ c.discount }} off</span>
+            </div> -->
+
+            <div class="ud-cta-group">
+              <button
+                mat-raised-button
+                color="accent"
+                class="ud-cta"
+                (click)="onEnroll()"
+                *ngIf="!isEnrolled(); else goBtn"
+                [disabled]="enrollInFlight()"
+                aria-label="Enroll into this course">
+                <mat-icon>school</mat-icon>
+                <span *ngIf="!enrollInFlight()">Enroll now</span>
+                <span *ngIf="enrollInFlight()">Enrolling…</span>
+              </button>
+
+              <ng-template #goBtn>
+                <button mat-raised-button color="primary" class="ud-cta" (click)="goToLearning()" aria-label="Go to course learning">
+                  <mat-icon>play_arrow</mat-icon>
+                  Start learning
+                </button>
+              </ng-template>
+
+              <button mat-stroked-button color="primary" class="ud-cta-secondary" (click)="goToLearning()" [disabled]="!isEnrolled()">
+                <mat-icon>visibility</mat-icon>
+                Preview
+              </button>
+            </div>
+
+            <ul class="ud-facts">
+              <li><mat-icon>schedule</mat-icon> {{ c.duration || 0 }} hours on‑demand content</li>
+              <li><mat-icon>all_inclusive</mat-icon> Lifetime access</li>
+              <li><mat-icon>sports_score</mat-icon> Certificate of completion</li>
+              <li><mat-icon>translate</mat-icon> {{ c.language || 'English' }}</li>
+            </ul>
+          </mat-card-content>
+        </mat-card>
+      </aside>
+    </div>
+
+    <!-- Footer actions & errors -->
+    <div class="ud-footer-actions">
+      <span class="error" *ngIf="errorMsg()">{{ errorMsg() }}</span>
+    </div>
+  </ng-container>
+
+  <!-- Error -->
+  <ng-template #error>
+    <mat-card>
+      <mat-card-title>Course not found</mat-card-title>
+      <mat-card-content>We couldn’t load this course. Please try again.</mat-card-content>
+    </mat-card>
+  </ng-template>
+</ng-template>

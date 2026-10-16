@@ -1,0 +1,57 @@
+<div class="learner-dashboard">
+  <header class="dashboard-heading">
+    <div><p>{{ today | date: 'EEEE, MMMM d' }}</p><h1>Good to see you, {{ firstName }}</h1><span>Here is the smallest useful plan for today.</span></div>
+    <a routerLink="/student/my-courses">View My Learning</a>
+  </header>
+
+  @if (isLoading()) {
+    <div class="dashboard-loading" aria-label="Loading learning dashboard"><div class="skeleton"></div><div class="skeleton"></div><div class="skeleton"></div></div>
+  } @else if (dashboard(); as dashboard) {
+    <section class="metric-grid" aria-label="Learning summary">
+      @for (metric of dashboard.metrics; track metric.label) {
+        <article [attr.data-tone]="metric.tone"><p>{{ metric.label }}</p><strong>{{ metric.value }}</strong><span>{{ metric.context }}</span></article>
+      }
+    </section>
+
+    <div class="dashboard-grid">
+      <div class="primary-column">
+        @if (dashboard.continueLearning; as current) {
+          <section class="continue-panel" aria-labelledby="continue-title">
+            <div class="continue-copy"><p>Continue learning</p><h2 id="continue-title">{{ current.courseTitle }}</h2><span>{{ current.moduleTitle }}</span><strong>{{ current.lessonTitle }}</strong><div class="progress-row"><div class="progress-track" role="progressbar" [attr.aria-valuenow]="current.progress" aria-valuemin="0" aria-valuemax="100"><span [style.width.%]="current.progress"></span></div><span>{{ current.progress }}%</span></div><small>Last activity {{ current.lastActivity | date: 'MMM d, h:mm a' }}</small></div>
+            <a [routerLink]="courseLink(current.courseId, current.legacyId)">Resume lesson</a>
+          </section>
+        }
+
+        <section class="plan-section" aria-labelledby="plan-title">
+          <div class="section-title"><div><p>Today</p><h2 id="plan-title">Your focused plan</h2></div><span>{{ dashboard.todayPlan.length }} items</span></div>
+          <ol class="plan-list">
+            @for (item of dashboard.todayPlan; track item.id) { <li><span class="plan-time">{{ item.timeLabel }}</span><div><strong>{{ item.title }}</strong><p>{{ item.context }}</p></div><span class="plan-type">{{ item.type }}</span></li> }
+            @empty { <li class="empty-row">Nothing urgent today. Continue a course when you are ready.</li> }
+          </ol>
+        </section>
+
+        <section class="recommendation-section" aria-labelledby="recommendation-title">
+          <div class="section-title"><div><p>Recommended with reasons</p><h2 id="recommendation-title">Useful next steps</h2></div></div>
+          <div class="recommendation-list">
+            @for (item of dashboard.recommendations; track item.id) { <article><div><span>{{ item.targetSkill }} · {{ item.effortMinutes }} min</span><h3>{{ item.title }}</h3><p>{{ item.reason }}</p></div><a [routerLink]="['/catalog/courses', item.courseId]">View activity</a></article> }
+            @empty { <div class="empty-state"><h3>No recommendations yet</h3><p>Complete another activity to generate a useful next step.</p></div> }
+          </div>
+        </section>
+      </div>
+
+      <aside class="secondary-column">
+        <section class="mastery-panel" aria-labelledby="mastery-title">
+          <div class="section-title"><div><p>Evidence, not guesswork</p><h2 id="mastery-title">Skill mastery</h2></div></div>
+          <div class="mastery-list">
+            @for (skill of dashboard.mastery; track skill.skill) { <div><div><strong>{{ skill.skill }}</strong><span>{{ skill.mastery }}%</span></div><div class="progress-track" role="progressbar" [attr.aria-label]="skill.skill" [attr.aria-valuenow]="skill.mastery" aria-valuemin="0" aria-valuemax="100"><span [style.width.%]="skill.mastery"></span></div><small>{{ skill.evidenceCount }} evidence items</small></div> }
+            @empty { <p class="empty-copy">Mastery appears after assessed work.</p> }
+          </div>
+          <a routerLink="/student/skills">Explore skills</a>
+        </section>
+        @if (dashboard.feedbackMessage) { <section class="feedback-panel" aria-labelledby="feedback-title"><p>Latest instructor feedback</p><h2 id="feedback-title">One thing to carry forward</h2><blockquote>{{ dashboard.feedbackMessage }}</blockquote><a routerLink="/student/notifications">Open feedback</a></section> }
+      </aside>
+    </div>
+  } @else {
+    <div class="error-state"><h2>Dashboard unavailable</h2><p>{{ errorMessage() }}</p><a class="button button--primary" routerLink="/student/my-courses">Open My Learning</a></div>
+  }
+</div>

@@ -1,0 +1,21 @@
+<div class="my-learning">
+  <header class="page-heading"><div><p>Learning library</p><h1>My Learning</h1><span>Resume, review, or find the next course that deserves your attention.</span></div><a routerLink="/catalog">Explore courses</a></header>
+  <nav class="learning-tabs" aria-label="Learning status">
+    @for (tab of tabs; track tab.value) { <button type="button" [class.active]="activeStatus() === tab.value" [attr.aria-pressed]="activeStatus() === tab.value" (click)="setStatus(tab.value)">{{ tab.label }}<span>{{ countForStatus(tab.value) }}</span></button> }
+  </nav>
+  <div class="learning-controls"><label><span>Search My Learning</span><input type="search" [formControl]="search" placeholder="Course, instructor, or topic"></label><label><span>Sort by</span><select [formControl]="sort"><option value="recent">Recently accessed</option><option value="progress">Most progress</option><option value="deadline">Nearest deadline</option></select></label></div>
+
+  @if (isLoading()) {
+    <div class="learning-list" aria-label="Loading courses">@for (item of [1,2,3]; track item) { <div class="course-loading skeleton"></div> }</div>
+  } @else if (errorMessage()) {
+    <div class="error-state"><h2>My Learning is unavailable</h2><p>{{ errorMessage() }}</p><a class="button" routerLink="/catalog">Browse the catalog</a></div>
+  } @else if (!filteredCourses().length) {
+    <div class="empty-state"><h2>{{ search.value ? 'No matching courses' : 'Nothing here yet' }}</h2><p>{{ search.value ? 'Try a broader search or choose another status.' : 'Explore the catalog to start a course.' }}</p>@if (search.value) { <button type="button" class="button" (click)="clearSearch()">Clear search</button> } @else { <a class="button button--primary" routerLink="/catalog">Explore courses</a> }</div>
+  } @else {
+    <div class="learning-list">
+      @for (course of filteredCourses(); track course.id) {
+        <article class="learning-course"><div class="course-marker" [attr.data-status]="course.status"><span>{{ course.category }}</span><strong aria-hidden="true">{{ course.progress }}%</strong></div><div class="course-copy"><div class="course-heading"><div><p>{{ course.instructorName }}</p><h2>{{ course.title }}</h2></div><span class="status" [class.status--active]="course.status === 'active' || course.status === 'completed'">{{ course.status }}</span></div><p class="next-lesson">Next: {{ course.nextLesson }}</p><div class="course-progress"><div class="progress-track" role="progressbar" [attr.aria-label]="course.title + ' progress'" [attr.aria-valuenow]="course.progress" aria-valuemin="0" aria-valuemax="100"><span [style.width.%]="course.progress"></span></div><span>{{ course.progress }}%</span></div><div class="course-meta"><span>Last opened {{ course.lastAccessedAt | date: 'MMM d' }}</span>@if (course.deadline) { <span>Due {{ course.deadline | date: 'MMM d' }}</span> }</div></div><a [routerLink]="courseLink(course)">{{ course.progress ? 'Continue' : 'Start' }}</a></article>
+      }
+    </div>
+  }
+</div>

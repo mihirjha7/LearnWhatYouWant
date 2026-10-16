@@ -1,0 +1,32 @@
+<section class="auth-page">
+  <aside class="auth-context">
+    <a class="auth-brand" routerLink="/home"><span aria-hidden="true">L</span>Learnova</a>
+    <div class="context-copy"><p>Welcome back</p><h1>Return to the exact place you stopped.</h1><span>Your courses, notes, feedback, and progress are ready when you are.</span><ul class="context-list"><li><span>&#10003;</span>Focused learning without losing your place</li><li><span>&#10003;</span>Private progress and profile controls</li><li><span>&#10003;</span>Clear support when a session expires</li></ul></div>
+    <p class="context-note">Your password and access token are never included in client logs.</p>
+  </aside>
+
+  <div class="auth-form-shell">
+    <div class="auth-panel">
+      <p>Secure sign in</p><h2>Continue learning</h2><p class="auth-intro">Use the email connected to your Learnova account.</p>
+      <form class="auth-form" [formGroup]="loginForm" (ngSubmit)="onSubmit()" novalidate>
+        <div class="field"><label for="login-email">Email address</label><input id="login-email" type="email" formControlName="email" autocomplete="email" [attr.aria-invalid]="loginForm.controls.email.invalid && loginForm.controls.email.touched"><small *ngIf="loginForm.controls.email.touched && loginForm.controls.email.hasError('required')" class="field-error">Enter your email address.</small><small *ngIf="loginForm.controls.email.touched && loginForm.controls.email.hasError('email')" class="field-error">Enter a valid email address.</small></div>
+        <div class="field"><label for="login-password">Password</label><div class="password-field"><input id="login-password" [type]="showPassword() ? 'text' : 'password'" formControlName="password" autocomplete="current-password" [attr.aria-invalid]="loginForm.controls.password.invalid && loginForm.controls.password.touched"><button type="button" (click)="showPassword.set(!showPassword())">{{ showPassword() ? 'Hide' : 'Show' }}</button></div><small *ngIf="loginForm.controls.password.touched && loginForm.controls.password.invalid" class="field-error">Enter your password.</small></div>
+        <div class="form-row"><span></span><a routerLink="/forgot-password">Forgot password?</a></div>
+        @if (errorMessage()) { <div class="form-error" role="alert">{{ errorMessage() }}</div> }
+        <button class="submit-button" type="submit" [disabled]="isSubmitting()">{{ isSubmitting() ? 'Signing in...' : 'Sign in' }}</button>
+      </form>
+      <p class="auth-footer">New to Learnova? <a routerLink="/register">Create a learner account</a></p>
+      @if (authService.canStartPreviewSession()) {
+        <div class="ws-banner" style="margin-top: 1.5rem; display: grid">
+          <strong>Development preview</strong>
+          <span>Explore a workspace with mock data. Unavailable in production builds.</span>
+          <div class="ws-row-flex">
+            <button type="button" class="button button--sm" (click)="preview('Student')">Learner</button>
+            <button type="button" class="button button--sm" (click)="preview('Instructor')">Instructor</button>
+            <button type="button" class="button button--sm" (click)="preview('Admin')">Administrator</button>
+          </div>
+        </div>
+      }
+    </div>
+  </div>
+</section>

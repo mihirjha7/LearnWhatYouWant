@@ -1,0 +1,44 @@
+.profile-card {
+  /* margin-top: 1.5rem; */
+  padding: 1.5rem;
+}
+
+.profile-card mat-card-header {
+  padding-bottom: 1rem;
+}
+
+.profile-card mat-card-title {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+} 
+
+.basics-heading {
+  font-size: 1.1rem;
+  font-weight: 500;
+  margin-top: 1.5rem;
+  margin-bottom: 1rem;
+  color: #555;
+}
+
+.full-width {
+  width: 100%;
+  margin-bottom: 1rem;
+}
+
+mat-card-actions {
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
+  margin-top: 1.5rem;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 2rem 0;
+  color: #6c757d;
+}

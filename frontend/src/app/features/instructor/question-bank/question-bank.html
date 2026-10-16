@@ -1,0 +1,110 @@
+<div class="ws-page">
+  <app-page-header eyebrow="Assessments" heading="Question bank" intro="Reusable, versioned questions tagged by skill and difficulty.">
+    <div class="ws-tabs" role="tablist" aria-label="Question bank views" style="border: 0">
+      <button type="button" role="tab" [attr.aria-selected]="view() === 'bank'" (click)="view.set('bank')">Questions</button>
+      <button type="button" role="tab" [attr.aria-selected]="view() === 'builder'" (click)="view.set('builder')">Assessment builder ({{ assessmentItems().length }})</button>
+    </div>
+  </app-page-header>
+
+  @if (loading()) {
+    <app-skeleton [lines]="3" label="Loading questions"></app-skeleton>
+  } @else if (view() === 'bank') {
+    <div class="ws-toolbar" role="search">
+      <label class="ws-field"><span>Search</span><input type="search" (input)="query.set($any($event.target).value)" placeholder="Prompt, skill, or tag" /></label>
+      <label class="ws-field"><span>Type</span><select (change)="typeFilter.set($any($event.target).value)"><option value="">All types</option>@for (t of types(); track t) { <option>{{ t }}</option> }</select></label>
+      <label class="ws-field"><span>Difficulty</span><select (change)="difficultyFilter.set($any($event.target).value)"><option value="">Any</option><option>Easy</option><option>Medium</option><option>Hard</option></select></label>
+      <label class="ws-field"><span>Status</span><select (change)="statusFilter.set($any($event.target).value)"><option value="active">Active</option><option value="draft">Draft</option><option value="archived">Archived</option><option value="">All</option></select></label>
+    </div>
+
+    @if (selected().size) {
+      <div class="ws-banner" role="region" aria-label="Bulk actions">
+        <strong>{{ selected().size }} selected</strong>
+        <button type="button" class="button button--sm button--primary" (click)="addSelectedToAssessment()">Add to assessment</button>
+        <label class="ws-row-flex ws-small"><span class="sr-only">Tag</span><input #tagInput placeholder="Add tag" style="width: 9rem; min-height: 2.25rem" /><button type="button" class="button button--sm" (click)="tagSelected(tagInput.value); tagInput.value = ''">Tag</button></label>
+        <button type="button" class="button button--sm" (click)="bulk({ status: 'archived' }, 'Archived')">Archive</button>
+        <button type="button" class="button button--sm" (click)="bulk({ status: 'active' }, 'Activated')">Activate</button>
+        <button type="button" class="button button--sm button--quiet" (click)="clearSelection()">Clear</button>
+      </div>
+    }
+
+    <div class="ws-split">
+      <div class="responsive-table">
+        <table>
+          <caption class="sr-only">Questions, {{ filtered().length }} results</caption>
+          <thead><tr>
+            <th scope="col"><input type="checkbox" [checked]="allSelected()" (change)="toggleAll()" aria-label="Select all visible questions" style="width: 1.1rem; min-height: 1.1rem" /></th>
+            <th scope="col">Question</th><th scope="col">Type</th><th scope="col">Difficulty</th><th scope="col">Used</th><th scope="col">Status</th>
+          </tr></thead>
+          <tbody>
+            @for (question of filtered(); track question.id) {
+              <tr [style.background]="selected().has(question.id) ? 'var(--surface-brand)' : null">
+                <td><input type="checkbox" [checked]="selected().has(question.id)" (change)="toggle(question.id)" [attr.aria-label]="'Select ' + question.prompt" style="width: 1.1rem; min-height: 1.1rem" /></td>
+                <td>
+                  <button type="button" class="button--quiet" style="border: 0; background: none; padding: 0; text-align: left; cursor: pointer; color: inherit; font-weight: 600" (click)="preview.set(question)">{{ question.prompt }}</button>
+                  <div class="ws-chips" style="margin-top: 0.25rem">@for (tag of question.tags; track tag) { <span class="ws-chip">#{{ tag }}</span> }@if (question.accessibilityIssue) { <span class="status status--warning">A11y issue</span> }</div>
+                </td>
+                <td>{{ question.type }}</td><td>{{ question.difficulty }}</td><td>{{ question.usage }}</td>
+                <td><app-status-badge [label]="question.status" [tone]="question.status === 'active' ? 'success' : question.status === 'draft' ? 'info' : 'neutral'"></app-status-badge></td>
+              </tr>
+            } @empty { <tr><td colspan="6" class="ws-muted">No questions match these filters.</td></tr> }
+          </tbody>
+        </table>
+      </div>
+      <aside class="ws-card" aria-labelledby="preview-title">
+        <h2 id="preview-title" class="ws-card__title">Preview</h2>
+        @if (preview(); as q) {
+          <span class="ws-eyebrow">{{ q.type }} · {{ q.difficulty }} · v{{ q.version }}</span>
+          <p><strong>{{ q.prompt }}</strong></p>
+          <dl class="ws-kv"><dt>Skill</dt><dd>{{ q.skill }}</dd><dt>Updated</dt><dd>{{ q.updatedAt | date: 'MMM d, y' }}</dd><dt>Used in</dt><dd>{{ q.usage }} assessments</dd></dl>
+          @if (q.accessibilityIssue) { <p class="ws-banner ws-banner--warning">{{ q.accessibilityIssue }}</p> }
+        } @else { <p class="ws-small ws-muted">Select a question to preview it as learners will see it.</p> }
+      </aside>
+    </div>
+  } @else {
+    <div class="ws-split">
+      <div class="ws-stack">
+        <section class="ws-card" aria-labelledby="fixed-title">
+          <div class="ws-spread"><h2 id="fixed-title">Fixed questions</h2><button type="button" class="button button--sm" (click)="view.set('bank')">Add from bank</button></div>
+          <ol class="ws-list" style="padding: 0">
+            @for (item of assessmentItems(); track item.id; let i = $index) {
+              <li>
+                <span class="ws-item__body"><strong>{{ i + 1 }}. {{ questionFor(item.id)?.prompt }}</strong><span>{{ questionFor(item.id)?.type }}</span></span>
+                <label class="ws-row-flex ws-small">Points <input type="number" min="0" max="50" [value]="item.points" (change)="setPoints(item.id, +$any($event.target).value)" style="width: 5rem" /></label>
+                <button type="button" class="button button--sm button--danger" (click)="removeItem(item.id)">Remove</button>
+              </li>
+            } @empty { <li class="ws-small ws-muted">No fixed questions yet.</li> }
+          </ol>
+        </section>
+        <section class="ws-card" aria-labelledby="pool-title" [formGroup]="settings">
+          <h2 id="pool-title">Random pool rule</h2>
+          <p class="ws-small ws-muted">Each learner receives a different random set from the pool.</p>
+          <div class="ws-grid ws-grid--3">
+            <label class="ws-field"><span>Skill</span><select formControlName="poolSkill"><option>API reliability</option><option>Reactive data flow</option><option>Interface architecture</option></select></label>
+            <label class="ws-field"><span>Questions drawn</span><input type="number" min="0" max="20" formControlName="poolCount" /></label>
+            <label class="ws-field"><span>Points each</span><input type="number" min="0" max="10" formControlName="poolPoints" /></label>
+          </div>
+        </section>
+      </div>
+      <aside class="ws-stack">
+        <form class="ws-card" [formGroup]="settings" (submit)="$event.preventDefault()" aria-labelledby="settings-title">
+          <h2 id="settings-title" class="ws-card__title">Settings</h2>
+          <label class="ws-field"><span>Title</span><input formControlName="title" /></label>
+          <div class="ws-grid ws-grid--2">
+            <label class="ws-field"><span>Time limit (min)</span><input type="number" min="0" formControlName="timeLimit" /></label>
+            <label class="ws-field"><span>Attempts</span><input type="number" min="1" formControlName="attempts" /></label>
+            <label class="ws-field"><span>Pass score (%)</span><input type="number" min="1" max="100" formControlName="passScore" /></label>
+            <label class="ws-field"><span>Feedback</span><select formControlName="feedback"><option value="after-submission">After submission</option><option value="after-due">After due date</option><option value="never">Score only</option></select></label>
+          </div>
+          <label class="ws-check"><input type="checkbox" formControlName="randomize" /> Randomize question order</label>
+          <label class="ws-check"><input type="checkbox" formControlName="negativeMarking" /> Negative marking</label>
+        </form>
+        <section class="ws-card" aria-live="polite">
+          <div class="ws-spread"><strong>Total points</strong><strong style="font-size: 1.5rem">{{ totalPoints() }}</strong></div>
+          @for (issue of builderIssues(); track issue) { <p class="ws-small" style="color: var(--warning)">⚠ {{ issue }}</p> }
+          <button type="button" class="button" (click)="saveAssessment(false)">Save draft</button>
+          <button type="button" class="button button--primary" [disabled]="builderIssues().length > 0" (click)="saveAssessment(true)">Publish assessment</button>
+        </section>
+      </aside>
+    </div>
+  }
+</div>

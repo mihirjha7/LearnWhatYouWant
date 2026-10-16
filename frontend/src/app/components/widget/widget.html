@@ -1,0 +1,19 @@
+<div [ngClass]="['summary-card']">
+      <div class="card-icon-group">
+        <div class="card-text">
+          <p class="card-title">{{ cardData.title }}</p>
+          <span class="card-value">{{ cardData.value }}</span>
+          <!-- <span class="card-trend" 
+                [class.positive]="cardData.trend.startsWith('+')" 
+                [class.negative]="cardData.trend.startsWith('-')">
+            {{ cardData.trend }}
+          </span> -->
+        </div>
+        <div [ngClass]="['icon-circle', cardData.colorClass]">
+            <mat-icon>{{ cardData.iconName }}</mat-icon> 
+        </div>
+      </div>
+      <div class="card-avatars">
+        <!-- <span class="avatar">+</span> -->
+      </div>
+    </div>

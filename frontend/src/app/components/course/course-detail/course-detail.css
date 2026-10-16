@@ -1,0 +1,248 @@
+/* ===== HERO ===== */
+.ud-hero {
+  position: relative;
+  background:
+    linear-gradient(135deg, rgba(0,188,212,.88), rgba(255,152,0,.88)),
+    var(--hero-bg) center/cover no-repeat;
+  color: #fff;
+  padding: 32px 16px;
+}
+.ud-hero-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,.45), rgba(0,0,0,.1));
+}
+.ud-hero-inner {
+  position: relative;
+  max-width: 1120px;
+  margin: 0 auto;
+}
+.ud-title {
+  margin: 0 0 8px;
+  font-weight: 800;
+  letter-spacing: .2px;
+}
+.ud-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.ud-submeta {
+  margin-top: 6px;
+  opacity: .95;
+}
+
+/* Chips */
+.ud-chip {
+  display: inline-flex;
+  align-items: center;
+  padding: 6px 10px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.18);
+  border: 1px solid rgba(255,255,255,.28);
+  backdrop-filter: blur(2px);
+}
+.ud-chip-rating {
+  border-color: rgba(255,215,0,.9);
+}
+.ud-muted { opacity: .9; }
+
+/* ===== LAYOUT ===== */
+.ud-layout {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  max-width: 1120px;
+  margin: 16px auto;
+  padding: 0 16px;
+}
+@media (min-width: 992px) {
+  .ud-layout {
+    grid-template-columns: minmax(0, 1fr) 360px;
+    align-items: start;
+  }
+}
+
+/* ===== MAIN ===== */
+.ud-main .ud-section { 
+  background: #fff;
+  border: 1px solid rgba(0,0,0,.06);
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 16px;
+}
+.ud-h2 {
+  margin: 0 0 12px;
+  font-weight: 700;
+  color: rgba(0,0,0,.9);
+}
+.ud-desc { color: rgba(0,0,0,.82); }
+
+/* What you'll learn */
+.ud-learn-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 8px 16px;
+  margin: 0; padding: 0;
+  list-style: none;
+}
+.ud-learn-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  color: rgba(0,0,0,.85);
+}
+.ud-learn-item mat-icon {
+  color: #00bcd4;
+}
+
+/* ===== CURRICULUM / LESSONS ===== */
+.ud-curriculum-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+.ud-curriculum-stats { color: rgba(0,0,0,.6); }
+
+.ud-accordion {
+  border: 1px solid rgba(0,0,0,.06);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+/* Lesson rows */
+.ud-lesson-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 12px;
+  border-top: 1px solid rgba(0,0,0,.06);
+}
+.ud-lesson-row:first-child { border-top: none; }
+
+.ud-lesson-left {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-width: 0;
+}
+.ud-lesson-icon {
+  color: #00bcd4;
+}
+.ud-lesson-icon.locked {
+  color: rgba(0,0,0,.35);
+}
+.ud-lesson-text { min-width: 0; }
+.ud-lesson-title {
+  font-weight: 600;
+  color: rgba(0,0,0,.92);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.ud-lesson-meta {
+  font-size: 13px;
+  color: rgba(0,0,0,.6);
+}
+.ud-lesson-right {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.ud-lesson-duration {
+  font-size: 12px;
+  color: rgba(0,0,0,.55);
+}
+
+/* ===== SIDEBAR ===== */
+.ud-sidebar { position: relative; }
+
+.ud-sticky-card {
+  position: sticky;
+  top: 16px;
+  border-radius: 14px;
+  overflow: hidden;
+}
+
+.ud-thumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  background: #fafafa;
+}
+.ud-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+.ud-thumb-play {
+  position: absolute;
+  right: 12px;
+  bottom: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.2);
+}
+
+.ud-price {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  margin-top: 12px;
+}
+.ud-price-now {
+  font-size: 28px;
+  font-weight: 800;
+}
+.ud-price-note {
+  color: rgba(0,0,0,.6);
+}
+
+.ud-cta-group {
+  display: grid;
+  gap: 10px;
+  margin: 16px 0 8px;
+}
+.ud-cta {
+  border-radius: 8px;
+  padding: 10px 16px;
+  text-transform: none;
+  font-weight: 700;
+  letter-spacing: .2px;
+}
+.ud-cta-secondary {
+  border-radius: 8px;
+  text-transform: none;
+  font-weight: 600;
+}
+
+.ud-facts {
+  list-style: none;
+  padding: 8px 0 0;
+  margin: 0;
+  display: grid;
+  gap: 8px;
+  color: rgba(0,0,0,.8);
+}
+.ud-facts li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.ud-facts mat-icon { color: #ff9800; }
+
+/* ===== FOOTER ===== */
+.ud-footer-actions {
+  max-width: 1120px;
+  margin: 0 auto 24px;
+  padding: 0 16px;
+}
+.error { color: #d32f2f; }
+
+/* Loading progress (native) */
+.loading-progress { width: 100%; height: 6px; }
+
+/* Responsive refinements */
+@media (min-width: 640px) {
+  .ud-learn-grid { grid-template-columns: 1fr 1fr; }
+}

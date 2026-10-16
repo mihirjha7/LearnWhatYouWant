@@ -1,0 +1,55 @@
+<mat-sidenav-container class="layout-container">
+
+  <mat-sidenav #sidenav 
+               class="sidenav"
+               [mode]="(isMobile$ | async) ? 'over' : 'side'"
+               [opened]="(isMobile$ | async) === false">
+    
+    <h3 mat-subheader>Student Menu</h3>
+    
+    <mat-nav-list (click)="sidenav.mode === 'over' && sidenav.close()">
+      
+      <a mat-list-item routerLink="dashboard" routerLinkActive="active">
+        <mat-icon matListItemIcon>dashboard</mat-icon>
+        <span matListItemTitle>Dashboard</span>
+      </a>
+      
+      <a mat-list-item routerLink="my-courses" routerLinkActive="active">
+        <mat-icon matListItemIcon>school</mat-icon>
+        <span matListItemTitle>My Courses</span>
+      </a>
+      
+      <a mat-list-item routerLink="profile" routerLinkActive="active">
+        <mat-icon matListItemIcon>person</mat-icon>
+        <span matListItemTitle>My Profile</span>
+      </a>
+    </mat-nav-list>
+
+    <mat-divider></mat-divider>
+
+    <div class="sidenav-footer">
+      <button mat-stroked-button color="accent" (click)="logout()">
+        <mat-icon>logout</mat-icon>
+        Logout
+      </button>
+    </div>
+
+  </mat-sidenav>
+
+
+  <mat-sidenav-content>
+
+    <mat-toolbar *ngIf="isMobile$ | async" color="primary"> 
+      <button mat-icon-button (click)="sidenav.toggle()">
+        <mat-icon>menu</mat-icon>
+      </button>
+      <span class="toolbar-title">Student Panel</span>
+    </mat-toolbar>
+    
+    <div class="content-wrapper">
+      <router-outlet></router-outlet>
+    </div>
+
+  </mat-sidenav-content>
+
+</mat-sidenav-container>

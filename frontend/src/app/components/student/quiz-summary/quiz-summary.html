@@ -1,0 +1,124 @@
+<div class="page-container">
+    <header class="page-header">
+      <h1 class="mat-h1">Quiz Performance Summary</h1>
+      <p class="mat-body-1">Review your quiz scores, attempts, and status for all enrolled courses.</p>
+    </header>
+
+    <mat-toolbar class="filter-toolbar">
+      <mat-form-field appearance="outline" class="search-field">
+        <mat-label>Search by Quiz Title</mat-label>
+        <mat-icon matPrefix>search</mat-icon>
+        <input matInput [(ngModel)]="searchTerm" (input)="applyFilters()" placeholder="e.g., HTML, Recursion">
+      </mat-form-field>
+
+      <div class="filters">
+        <mat-form-field appearance="outline">
+          <mat-label>Course</mat-label>
+          <mat-select [(ngModel)]="courseFilter" (selectionChange)="applyFilters()">
+            <mat-option value="all">All Courses</mat-option>
+            <mat-option *ngFor="let course of enrolledCourses" [value]="course.courseID">
+              {{ course.title }}
+            </mat-option>
+          </mat-select> 
+        </mat-form-field>
+        
+        <mat-form-field appearance="outline">
+          <mat-label>Status</mat-label>
+          <mat-select [(ngModel)]="statusFilter" (selectionChange)="applyFilters()">
+            <mat-option value="all">All Statuses</mat-option>
+            <mat-option value="attempted">Attempted</mat-option>
+            <mat-option value="not_started">Not Started</mat-option>
+       
+          </mat-select>
+        </mat-form-field>
+      </div>
+    </mat-toolbar>
+
+    <div *ngIf="isLoading()" class="loading-container">
+      <mat-spinner diameter="50"></mat-spinner>
+      <p>Loading quiz summaries...</p>
+    </div>
+
+    <div *ngIf="!isLoading()">
+      <mat-card class="table-card">
+        <div class="table-responsive">
+          <table mat-table [dataSource]="dataSource" matSort>
+
+            <ng-container matColumnDef="srNo">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>SrNo</th>
+              <td mat-cell *matCellDef="let quiz">{{ quiz.srNo }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="quizTitle">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Quiz Title</th>
+              <td mat-cell *matCellDef="let quiz">{{ quiz.quizTitle }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="highestScore">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Highest Score</th>
+              <td mat-cell *matCellDef="let quiz">
+                <mat-chip-set>
+                  <mat-chip 
+                    [color]="quiz.highestScore !== null && quiz.highestScore >= (quiz.totalMarks * 0.7) ? 'primary' : 'accent'" 
+                    highlighted 
+                    *ngIf="quiz.highestScore !== null; else noScore"
+                  >
+                    {{ quiz.highestScore }}
+                  </mat-chip>
+                  <ng-template #noScore>
+                      <mat-chip color="warn" highlighted>N/A</mat-chip>
+                  </ng-template>
+                </mat-chip-set>
+              </td>
+            </ng-container>
+            
+            <ng-container matColumnDef="totalMarks">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Total Marks</th>
+              <td mat-cell *matCellDef="let quiz">{{ quiz.totalMarks }}</td>
+            </ng-container>
+
+            <ng-container matColumnDef="attemptsLeft">
+              <th mat-header-cell *matHeaderCellDef mat-sort-header>Attempts Left</th>
+              <td mat-cell *matCellDef="let quiz">
+                  <span [ngClass]="{'text-red-600 font-medium': quiz.attemptsLeft === 0, 'text-green-600': quiz.attemptsLeft > 0}">
+                    {{ quiz.attemptsLeft }} / {{ quiz.attemptsAllowed }}
+                  </span>
+              </td>
+            </ng-container>
+
+            <ng-container matColumnDef="actions">
+              <th mat-header-cell *matHeaderCellDef>Action</th>
+              <td mat-cell *matCellDef="let quiz">
+                <button mat-flat-button class="action-button"
+                        [color]="getActionColor(quiz)"
+                        (click)="handleQuizAction(quiz)"
+                        [disabled]="quiz.attemptsLeft === 0 && quiz.highestScore === null">
+                  <ng-container *ngIf="quiz.highestScore !== null && quiz.attemptsLeft === 0">Quiz Locked</ng-container>
+                  <ng-container *ngIf="quiz.highestScore !== null && quiz.attemptsLeft > 0">Retake Quiz</ng-container>
+                  <ng-container *ngIf="quiz.highestScore === null && quiz.attemptsLeft > 0">Start Quiz</ng-container>
+                  
+                </button>
+               
+              </td>
+            </ng-container>
+
+            <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+            <tr mat-row *matRowDef="let row; columns: displayedColumns;"></tr>
+
+            <tr class="mat-row" *matNoDataRow>
+              <td class="mat-cell empty-cell" [attr.colspan]="displayedColumns.length">
+                <div class="empty-state">
+                  <mat-icon class="empty-state-icon">search_off</mat-icon>
+                  <h2>No Quizzes Found</h2>
+                  <p>No quizzes match your current search and filter criteria.</p>
+                </div>
+              </td>
+            </tr>
+          </table>
+        </div>
+
+        <mat-paginator [pageSizeOptions]="[5, 10, 25, 100]" showFirstLastButtons>
+        </mat-paginator>
+      </mat-card>
+    </div> 
+  </div>

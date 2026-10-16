@@ -1,0 +1,70 @@
+:host { display: block; }
+.hub-page { display: grid; gap: var(--space-6); }
+.hub-heading { display: flex; align-items: end; justify-content: space-between; gap: var(--space-5); }
+.hub-heading p, .settings-sections section > p, .session-section > p, .review-complete > p { color: var(--progress); font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; }
+.hub-heading h1 { margin-top: var(--space-1); }
+.hub-heading div > span { color: var(--text-muted); }
+.hub-heading > button { min-height: 2.75rem; padding-inline: var(--space-4); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); color: var(--brand-hover); font-weight: 600; cursor: pointer; }
+.hub-loading { min-height: 32rem; }
+.review-layout { display: grid; grid-template-columns: minmax(0, 1fr) 16rem; align-items: start; gap: var(--space-6); }
+.review-card { display: grid; min-height: 27rem; align-content: center; padding: var(--space-8); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); box-shadow: var(--shadow-sm); }
+.review-meta, .skill-title { display: flex; align-items: center; justify-content: space-between; gap: var(--space-3); }
+.review-meta span { color: var(--text-muted); font-size: var(--text-xs); font-weight: 600; }
+.review-card h2 { max-width: 28ch; margin-top: var(--space-6); font-size: var(--text-2xl); }
+.review-answer { margin-top: var(--space-6); padding: var(--space-5); border-left: 4px solid var(--progress); background: var(--surface-progress); }
+.review-answer small { display: block; margin-top: var(--space-3); color: var(--text-muted); }
+.reveal-button, .save-settings { min-height: 3rem; margin-top: var(--space-8); border: 0; border-radius: var(--radius-md); background: var(--brand); color: var(--brand-contrast); font-weight: 700; cursor: pointer; }
+.review-card fieldset { display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-2); margin: var(--space-6) 0 0; padding: 0; border: 0; }
+.review-card legend { grid-column: 1 / -1; margin-bottom: var(--space-2); color: var(--text-soft); font-size: var(--text-sm); font-weight: 600; }
+.review-card fieldset button { min-height: 2.75rem; border: 1px solid var(--border-strong); border-radius: var(--radius-md); background: var(--surface); color: var(--text); font-weight: 600; cursor: pointer; }
+.review-layout aside { display: grid; gap: var(--space-2); padding: var(--space-5); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); }
+.review-layout aside p { color: var(--text-muted); font-size: var(--text-xs); }
+.review-layout aside strong { font-size: var(--text-2xl); }
+.review-layout aside span, .review-layout aside small { color: var(--text-muted); font-size: var(--text-sm); }
+.review-layout aside .progress-track { margin-block: var(--space-3); }
+.review-complete { display: grid; min-height: 28rem; place-items: center; align-content: center; gap: var(--space-3); text-align: center; }
+.review-complete > span { color: var(--text-muted); }
+.review-complete a { margin-top: var(--space-4); font-weight: 600; }
+.timeline, .notification-list, .message-list { display: grid; overflow: hidden; border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); }
+.timeline article { display: grid; grid-template-columns: 4rem 1fr auto; align-items: center; gap: var(--space-5); min-height: 7rem; padding: var(--space-4); border-bottom: 1px solid var(--border); }
+.timeline article:last-child, .notification-list article:last-child { border-bottom: 0; }
+.timeline time { display: grid; place-items: center; padding: var(--space-2); border-radius: var(--radius-md); background: var(--surface-brand); }
+.timeline time strong { font-size: var(--text-xl); }
+.timeline time span, .timeline article div > span, .timeline article > strong { color: var(--text-muted); font-size: var(--text-xs); text-transform: uppercase; }
+.timeline h2 { margin-block: var(--space-1); font-size: var(--text-base); }
+.timeline p { color: var(--text-muted); font-size: var(--text-sm); }
+.skill-grid, .certificate-grid, .achievement-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: var(--space-4); }
+.skill-grid article, .certificate-grid article, .achievement-grid article { padding: var(--space-5); border: 1px solid var(--border); border-radius: var(--radius-md); background: var(--surface); }
+.skill-title span, .achievement-grid article > p { color: var(--progress); font-size: var(--text-xs); font-weight: 700; text-transform: uppercase; }
+.skill-title h2 { margin-top: var(--space-1); font-size: var(--text-lg); }
+.skill-title > strong { color: var(--progress); font-size: var(--text-2xl); }
+.skill-grid .progress-track { margin-block: var(--space-4); }
+.skill-grid article > p { color: var(--text-soft); font-size: var(--text-sm); }
+.skill-grid details { margin-top: var(--space-4); color: var(--text-soft); font-size: var(--text-sm); }
+.skill-grid article > small { display: block; margin-top: var(--space-4); color: var(--text-muted); }
+.certificate-grid article { position: relative; display: grid; align-content: start; min-height: 22rem; }
+.credential-mark { display: grid; width: 2.75rem; height: 2.75rem; place-items: center; border-radius: var(--radius-md); background: var(--brand); color: var(--brand-contrast); font-weight: 700; }
+.certificate-grid .status { position: absolute; top: var(--space-5); right: var(--space-5); }
+.certificate-grid article > p { margin-top: var(--space-8); color: var(--text-muted); font-size: var(--text-xs); text-transform: uppercase; }
+.certificate-grid h2 { margin-top: var(--space-2); }
+.certificate-grid article > small, .achievement-grid small { margin-top: var(--space-2); color: var(--text-muted); }
+.certificate-skills { display: flex; flex-wrap: wrap; gap: var(--space-2); margin-top: var(--space-5); }
+.certificate-skills span { padding: 0.2rem 0.5rem; border-radius: var(--radius-full); background: var(--surface-subtle); font-size: var(--text-xs); }
+.certificate-grid code { margin-top: auto; padding-top: var(--space-6); color: var(--text-soft); }
+.certificate-grid a { margin-top: var(--space-3); font-weight: 600; }
+.notification-list article { display: grid; grid-template-columns: 5rem 1fr auto; align-items: center; gap: var(--space-4); min-height: 6rem; padding: var(--space-4); border-bottom: 1px solid var(--border); }
+.notification-list article.unread { border-left: 4px solid var(--brand); background: var(--surface-brand); }
+.notification-type { color: var(--text-muted); font-size: var(--text-xs); text-transform: uppercase; }
+.notification-list h2, .message-list h2 { font-size: var(--text-base); }
+.notification-list p, .notification-list time { color: var(--text-muted); font-size: var(--text-sm); }
+.message-list button { display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: var(--space-4); min-height: 6.5rem; padding: var(--space-4); border: 0; border-bottom: 1px solid var(--border); background: var(--surface); color: var(--text); text-align: left; cursor: pointer; }
+.message-list button.unread { background: var(--surface-brand); }
+.message-avatar, .session-device { display: grid; width: 2.75rem; height: 2.75rem; place-items: center; border-radius: 50%; background: var(--progress-soft); color: var(--progress); font-weight: 700; }
+.message-list p, .message-list span, .message-list time { color: var(--text-muted); font-size: var(--text-xs); }
+.achievement-grid article { display: grid; min-height: 15rem; align-content: start; }
+.achievement-number { color: var(--text-muted); font-size: var(--text-xl); }
+.achievement-grid h2 { margin-block: var(--space-4) var(--space-2); }
+.achievement-grid article > span:not(.achievement-number) { color: var(--text-soft); }
+.achievement-grid small { margin-top: auto; padding-top: var(--space-5); }
+@media (max-width: 54rem) { .review-layout { grid-template-columns: 1fr; } .review-layout aside { grid-row: 1; } }
+@media (max-width: 40rem) { .hub-heading { align-items: flex-start; flex-direction: column; } .review-card { min-height: 24rem; padding: var(--space-5); } .review-card fieldset, .skill-grid, .certificate-grid, .achievement-grid { grid-template-columns: 1fr; } .timeline article, .notification-list article { grid-template-columns: 3.5rem 1fr; } .timeline article > strong, .notification-list time { grid-column: 2; } }

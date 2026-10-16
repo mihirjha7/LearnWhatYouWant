@@ -1,0 +1,131 @@
+:host {
+  /* This allows the card to be sized correctly in a grid/flex container */
+  display: block;
+  height: 100%;
+}
+
+.course-card-link {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  height: 100%;
+}
+
+.course-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-height: 360px;
+  
+  /* A more subtle, modern border */
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  
+  /* Start with a minimal shadow */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.04);
+  
+  /* Smooth transition for the hover effect */
+  transition: box-shadow 0.3s ease, transform 0.3s ease;
+  
+  /* We'll use this to position the arrow icon */
+  position: relative; 
+}
+
+/* This is the main hover effect */
+.course-card-link:hover .course-card {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+}
+
+.mat-mdc-card-image {
+  height: 180px;
+  width: 100%;
+  object-fit: contain;
+  background: #f7f7f7;
+}
+/* Use the built-in padding for a title group */
+.mat-mdc-card-title-group {
+  padding: 16px 16px 12px;
+}
+
+.mat-mdc-card-title {
+  font-size: 1.15rem; /* Slightly smaller, more refined */
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+/* This content holds the rating and chips */
+.mat-mdc-card-content {
+  padding: 0 16px 16px;
+  flex-grow: 1; /* Pushes the (now removed) actions to the bottom */
+}
+
+.rating {
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+}
+
+.rating mat-icon {
+  color: #fdd835; /* Gold */
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+}
+
+/* --- Style the Chips --- */
+.details-chips {
+  /* This disables the default mat-chip-list spacing */
+  margin: 0; 
+}
+
+/* Use ::ng-deep to style the inner chip elements */
+:host ::ng-deep .details-chips .mdc-evolution-chip-set__chips {
+  gap: 8px; /* Space between chips */
+}
+
+:host ::ng-deep .details-chips .mdc-evolution-chip {
+  height: 28px; /* Make chips smaller */
+  padding: 0 10px;
+  background-color: #f5f5f5; /* Light gray background */
+}
+
+:host ::ng-deep .details-chips .mat-mdc-chip-avatar {
+  font-size: 16px;
+  height: 16px;
+  width: 16px;
+  color: #6c757d; /* Soft icon color */
+}
+
+:host ::ng-deep .details-chips .mdc-evolution-chip__text-label {
+  font-size: 0.8rem;
+  color: #333;
+}
+
+/* --- Hover "View" Icon --- */
+.view-indicator {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  
+  /* Make it a circle */
+  background: var(--mat-accent-color, #4b106a);
+  color: white;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  
+  /* Center the icon */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  /* Start transparent and invisible */
+  opacity: 0;
+  transform: scale(0.8);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+}
+
+.course-card-link:hover .view-indicator {
+  opacity: 1;
+  transform: scale(1);
+}

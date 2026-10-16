@@ -1,0 +1,15 @@
+{
+  "apiBaseUrl": "https://localhost:7049/api",
+  "uploadBaseUrl": "https://localhost:7049/Uploads/",
+  "dataMode": "legacy",
+  "featureFlags": {
+    "mockPlatform": true,
+    "learningPaths": true,
+    "dailyReview": true,
+    "aiAssistant": false,
+    "liveLearning": true,
+    "labs": true,
+    "enterprise": true,
+    "offlineAssessments": false
+  }
+}

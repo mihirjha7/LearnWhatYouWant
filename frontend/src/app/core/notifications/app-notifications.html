@@ -1,0 +1,19 @@
+<section class="notifications" aria-label="Notifications" aria-live="polite" aria-relevant="additions">
+  @for (notification of notificationService.notifications(); track notification.id) {
+    <article class="notification" [attr.data-tone]="notification.tone">
+      <div>
+        <strong>{{ notification.message }}</strong>
+        @if (notification.detail) {
+          <p>{{ notification.detail }}</p>
+        }
+      </div>
+      <button
+        type="button"
+        aria-label="Dismiss notification"
+        (click)="notificationService.dismiss(notification.id)"
+      >
+        &times;
+      </button>
+    </article>
+  }
+</section>

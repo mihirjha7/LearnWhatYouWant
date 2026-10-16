@@ -1,0 +1,13 @@
+<div class="student-summary-card" [ngClass]="cardData.colorClass">
+  <div class="card-icon-wrapper">
+    <mat-icon class="card-icon">{{ cardData.iconName }}</mat-icon>
+  </div>
+  <div class="card-content">
+    <div class="card-title">{{ cardData.title }}</div>
+    <div class="card-value">{{ cardData.value }}</div>
+  </div>
+  <div class="card-footer">
+    <span class="trend-text">{{ cardData.trend }}</span> 
+    <mat-icon class="trend-icon">keyboard_arrow_right</mat-icon>
+  </div>
+</div>

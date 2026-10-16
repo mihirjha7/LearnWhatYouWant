@@ -1,0 +1,114 @@
+<div class="ws-page">
+  @if (loading()) {
+    <app-skeleton [lines]="3" label="Loading organization"></app-skeleton>
+  } @else if (org(); as o) {
+    <app-page-header [eyebrow]="'Organization · ' + o.name" [heading]="mode === 'sso' ? 'Single sign-on' : mode.charAt(0).toUpperCase() + mode.slice(1)" [intro]="o.seatsUsed + ' of ' + o.seats + ' seats in use'"></app-page-header>
+
+    @switch (mode) {
+      @case ('dashboard') {
+        <div class="ws-metrics">
+          @for (metric of o.metrics; track metric.label) { <app-metric-card [label]="metric.label" [value]="metric.value" [context]="metric.context" [tone]="metric.tone"></app-metric-card> }
+        </div>
+        <section class="ws-card" aria-labelledby="cohort-progress">
+          <h2 id="cohort-progress" class="ws-card__title">Assignment progress</h2>
+          <ul class="ws-list">
+            @for (cohort of o.cohorts; track cohort.id) {
+              <li><span class="ws-item__body"><strong>{{ cohort.name }}</strong><span>{{ cohort.learning }} · {{ cohort.members }} members · due {{ cohort.dueAt | date: 'MMM d' }}</span></span>
+                <span style="min-width: 10rem"><div class="progress-track" role="progressbar" [attr.aria-label]="cohort.name + ' completion'" [attr.aria-valuenow]="cohort.completion" aria-valuemin="0" aria-valuemax="100"><span [style.width.%]="cohort.completion"></span></div><small>{{ cohort.completion }}% complete</small></span></li>
+            }
+          </ul>
+        </section>
+      }
+
+      @case ('members') {
+        <form class="ws-card" [formGroup]="inviteForm" (ngSubmit)="invite()" aria-labelledby="invite-title">
+          <h2 id="invite-title" class="ws-card__title">Invite members</h2>
+          <div class="ws-grid ws-grid--2">
+            <label class="ws-field"><span>Email addresses</span><textarea rows="3" formControlName="emails" placeholder="Paste addresses separated by commas or new lines"></textarea></label>
+            <label class="ws-field"><span>Group</span><select formControlName="group"><option>Engineering</option><option>Clinical ops</option><option>People team</option></select><small>Invitees receive a single-use link valid for 7 days.</small></label>
+          </div>
+          @if (inviteResult(); as result) {
+            @if (result.invalid.length) { <p class="ws-banner ws-banner--warning" role="alert">Skipped invalid: {{ result.invalid.join(', ') }}</p> }
+          }
+          <div class="ws-row-flex"><button type="submit" class="button button--primary" [disabled]="inviteForm.invalid">Send invitations</button></div>
+        </form>
+        <div class="ws-toolbar" role="search"><label class="ws-field"><span>Search members</span><input type="search" (input)="memberQuery.set($any($event.target).value)" /></label></div>
+        <div class="responsive-table">
+          <table>
+            <thead><tr><th scope="col">Name</th><th scope="col">Email</th><th scope="col">Role</th><th scope="col">Group</th><th scope="col">Status</th></tr></thead>
+            <tbody>
+              @for (member of filteredMembers(); track member.id) {
+                <tr><td><strong>{{ member.name }}</strong></td><td>{{ member.email }}</td><td>{{ member.role }}</td><td>{{ member.group }}</td>
+                  <td><app-status-badge [label]="member.status" [tone]="member.status === 'active' ? 'success' : member.status === 'invited' ? 'info' : 'neutral'"></app-status-badge></td></tr>
+              }
+            </tbody>
+          </table>
+        </div>
+      }
+
+      @case ('cohorts') {
+        <form class="ws-card" [formGroup]="cohortForm" (ngSubmit)="createCohort()" aria-labelledby="cohort-title">
+          <h2 id="cohort-title" class="ws-card__title">New cohort</h2>
+          <ol class="ws-tabs" style="list-style: none; padding: 0; margin: 0" aria-label="Cohort steps">
+            @for (step of cohortSteps; track step; let i = $index) {
+              <li><button type="button" [class.active]="cohortStep() === i" [attr.aria-current]="cohortStep() === i ? 'step' : null" (click)="cohortStep.set(i)">{{ i + 1 }}. {{ step }}</button></li>
+            }
+          </ol>
+          @switch (cohortStep()) {
+            @case (0) { <div class="ws-grid ws-grid--2"><label class="ws-field"><span>Cohort name</span><input formControlName="name" /></label><label class="ws-field"><span>Source group</span><select formControlName="group"><option>Clinical ops</option><option>Engineering</option><option>People team</option></select></label><label class="ws-field"><span>Members</span><input type="number" min="1" formControlName="members" /></label></div> }
+            @case (1) { <label class="ws-field"><span>Assigned learning</span><select formControlName="learning"><option>Accessible Web Experiences</option><option>Product Leadership Essentials</option><option>Data Privacy Essentials</option></select></label> }
+            @case (2) { <label class="ws-field" style="max-width: 20rem"><span>Due date</span><input type="date" formControlName="dueAt" /></label> }
+            @case (3) { <label class="ws-check"><input type="checkbox" formControlName="reminders" /> Send reminders 7 days and 1 day before the due date</label> }
+            @default {
+              <dl class="ws-kv">
+                <dt>Name</dt><dd>{{ cohortForm.controls.name.value || '—' }}</dd><dt>Members</dt><dd>{{ cohortForm.controls.members.value }} from {{ cohortForm.controls.group.value }}</dd>
+                <dt>Learning</dt><dd>{{ cohortForm.controls.learning.value }}</dd><dt>Due</dt><dd>{{ cohortForm.controls.dueAt.value || '—' }}</dd><dt>Reminders</dt><dd>{{ cohortForm.controls.reminders.value ? 'On' : 'Off' }}</dd>
+              </dl>
+            }
+          }
+          <div class="ws-row-flex">
+            @if (cohortStep() > 0) { <button type="button" class="button" (click)="cohortStep.set(cohortStep() - 1)">Back</button> }
+            @if (cohortStep() < cohortSteps.length - 1) { <button type="button" class="button button--primary" (click)="nextCohortStep()">Continue</button> }
+            @else { <button type="submit" class="button button--primary">Create cohort and assign</button> }
+          </div>
+        </form>
+        <div class="ws-grid">
+          @for (cohort of o.cohorts; track cohort.id) {
+            <article class="ws-card"><h2 class="ws-card__title">{{ cohort.name }}</h2><span class="ws-small ws-muted">{{ cohort.learning }}</span><dl class="ws-kv"><dt>Members</dt><dd>{{ cohort.members }}</dd><dt>Due</dt><dd>{{ cohort.dueAt | date: 'MMM d, y' }}</dd><dt>Reminders</dt><dd>{{ cohort.reminders ? 'On' : 'Off' }}</dd></dl><div class="progress-track" aria-hidden="true"><span [style.width.%]="cohort.completion"></span></div><small>{{ cohort.completion }}% complete</small></article>
+          }
+        </div>
+      }
+
+      @case ('branding') {
+        <div class="ws-split">
+          <form class="ws-card" [formGroup]="brandingForm" (ngSubmit)="saveBranding()" aria-labelledby="brand-title">
+            <h2 id="brand-title" class="ws-card__title">Brand settings</h2>
+            <label class="ws-field"><span>Primary accent</span><input type="color" formControlName="primaryColor" style="max-width: 6rem; padding: 0.2rem" /><small>Contrast against white: {{ contrast() }}:1 (minimum 4.5:1)</small></label>
+            @if (contrast() < 4.5) { <p class="ws-banner ws-banner--danger" role="alert">This color does not meet contrast requirements and cannot be saved.</p> }
+            <label class="ws-field"><span>Display name</span><input formControlName="displayName" maxlength="40" /></label>
+            <label class="ws-field"><span>Banner text</span><input formControlName="bannerText" maxlength="80" /></label>
+            <p class="ws-small ws-muted">Custom CSS is not supported. Semantic colors for errors and warnings are never overridden.</p>
+            <div class="ws-row-flex"><button type="submit" class="button button--primary" [disabled]="contrast() < 4.5">Save branding</button></div>
+          </form>
+          <aside class="ws-stack" aria-label="Live preview">
+            <div class="ws-card" [style.background]="brandingForm.controls.primaryColor.value" style="color: #fff; border: 0">
+              <span class="ws-xs" style="opacity: 0.85">Learner portal preview</span>
+              <strong style="font-size: 1.25rem">{{ brandingForm.controls.displayName.value || o.name }}</strong>
+              <span>{{ brandingForm.controls.bannerText.value }}</span>
+            </div>
+            <div class="ws-card"><span class="ws-small">Email header preview</span><strong [style.color]="brandingForm.controls.primaryColor.value">{{ brandingForm.controls.displayName.value || o.name }}</strong><span class="ws-small ws-muted">You have a new assignment due Friday.</span></div>
+          </aside>
+        </div>
+      }
+
+      @case ('sso') {
+        <section class="ws-card" aria-labelledby="sso-title">
+          <div class="ws-spread"><h2 id="sso-title" class="ws-card__title">{{ o.sso.provider }}</h2><app-status-badge [label]="o.sso.status" [tone]="o.sso.status === 'connected' ? 'success' : o.sso.status === 'pending' ? 'info' : 'danger'"></app-status-badge></div>
+          <dl class="ws-kv"><dt>Verified domain</dt><dd>{{ o.sso.domain }}</dd><dt>Last test</dt><dd>{{ o.sso.lastTestAt | date: 'MMM d, HH:mm' }}</dd><dt>Client secret</dt><dd>Stored securely · not displayed</dd></dl>
+          <p class="ws-banner ws-banner--warning">{{ o.sso.detail }}</p>
+          <div class="ws-row-flex"><button type="button" class="button" [disabled]="testingSso()" (click)="testSso()">{{ testingSso() ? 'Testing…' : 'Test connection' }}</button></div>
+        </section>
+      }
+    }
+  }
+</div>

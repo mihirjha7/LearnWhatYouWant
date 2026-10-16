@@ -1,0 +1,17 @@
+
+@use '@angular/material' as mat;
+
+html {
+  @include mat.theme((
+    color: (
+      primary: mat.$azure-palette,
+      tertiary: mat.$cyan-palette,
+    ),
+    typography: Poppins,
+    density: 0,
+  ));
+}
+
+body {
+  color-scheme: light;
+}

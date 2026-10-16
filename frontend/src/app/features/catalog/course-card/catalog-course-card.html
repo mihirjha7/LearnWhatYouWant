@@ -1,0 +1,32 @@
+<article class="course-card" [attr.data-accent]="course.accent">
+  <a class="course-link" [routerLink]="['/catalog/courses', course.id]" [attr.aria-label]="'View ' + course.title">
+    <div class="course-visual">
+      @if (course.thumbnailUrl) {
+        <img [src]="course.thumbnailUrl" [alt]="course.title">
+      } @else {
+        <span>{{ course.category }}</span>
+        <strong aria-hidden="true">{{ course.skills[0].slice(0, 2).toUpperCase() }}</strong>
+      }
+    </div>
+
+    <div class="course-body">
+      <div class="course-meta">
+        <span>{{ course.level }}</span>
+        <span>{{ durationLabel() }}</span>
+      </div>
+      <h3>{{ course.title }}</h3>
+      <p>{{ course.summary }}</p>
+      <div class="skill-list" aria-label="Skills covered">
+        @for (skill of course.skills.slice(0, 2); track skill) {
+          <span>{{ skill }}</span>
+        }
+      </div>
+      <div class="course-footer">
+        <span class="instructor">{{ course.instructorName }}</span>
+        <span class="rating" [attr.aria-label]="course.rating + ' out of 5 stars'">
+          <span aria-hidden="true">&#9733;</span> {{ course.rating.toFixed(1) }}
+        </span>
+      </div>
+    </div>
+  </a>
+</article>

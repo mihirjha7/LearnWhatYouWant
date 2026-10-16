@@ -1,0 +1,87 @@
+<div class="app-header">
+      <h2 class="header-title">Quizzes</h2>
+    </div>
+
+    <div class="container">
+      <div class="toolbar">
+        <mat-form-field appearance="outline" class="search">
+          <mat-label>Search</mat-label>
+          <input matInput (keyup)="applyFilter($event)" placeholder="Title / Course ID">
+          <mat-icon matSuffix>search</mat-icon>
+        </mat-form-field>
+        <button mat-raised-button color="primary" [routerLink]="['/quiz-builder']">
+          <mat-icon>add</mat-icon> New Quiz
+        </button>
+      </div>
+
+      <mat-progress-bar *ngIf="loading()" mode="indeterminate" color="accent"></mat-progress-bar>
+
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="dataSource" matSort class="mat-elevation-z2">
+          <!-- ID -->
+          <ng-container matColumnDef="quizID">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>ID</th>
+            <td mat-cell *matCellDef="let row">{{ row.quizID }}</td>
+          </ng-container>
+
+          <!-- Title -->
+          <ng-container matColumnDef="title">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Title</th>
+            <td mat-cell *matCellDef="let row">{{ row.title }}</td>
+          </ng-container>
+
+          <!-- CourseID -->
+          <ng-container matColumnDef="courseID">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Course</th>
+            <td mat-cell *matCellDef="let row">{{ row.courseID }}</td>
+          </ng-container>
+
+          <!-- totalMarks -->
+          <ng-container matColumnDef="totalMarks">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Marks</th>
+            <td mat-cell *matCellDef="let row">{{ row.totalMarks }}</td>
+          </ng-container>
+
+          <!-- timeLimit -->
+          <ng-container matColumnDef="timeLimit">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Time (min)</th>
+            <td mat-cell *matCellDef="let row">{{ row.timeLimit }}</td>
+          </ng-container>
+
+          <!-- attemptsAllowed -->
+          <ng-container matColumnDef="attemptsAllowed">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Attempts</th>
+            <td mat-cell *matCellDef="let row">{{ row.attemptsAllowed }}</td>
+          </ng-container>
+
+          <!-- Actions -->
+          <ng-container matColumnDef="actions">
+            <th mat-header-cell *matHeaderCellDef>Actions</th>
+            <td mat-cell *matCellDef="let row">
+              <button mat-icon-button color="primary" matTooltip="Edit"
+                      (click)="openEdit(row)">
+                <mat-icon>edit</mat-icon>
+              </button>
+
+              <button mat-icon-button color="accent" matTooltip="Add Questions"
+                      (click)="goToQuestions(row.id)">
+                <mat-icon>quiz</mat-icon>
+              </button>
+
+              <button mat-icon-button color="warn" matTooltip="Delete"
+                      (click)="confirmDelete(row)">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
+        </table>
+
+        <mat-paginator [length]="dataSource.data.length"
+                       [pageSize]="10"
+                       [pageSizeOptions]="[5, 10, 25, 50]">
+        </mat-paginator>
+      </div>
+    </div>

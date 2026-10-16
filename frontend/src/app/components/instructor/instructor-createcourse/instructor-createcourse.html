@@ -1,0 +1,556 @@
+<div class="create-course-container">
+    <mat-card class="main-card-wrapper">
+        <header class="page-header">
+            <h1>Course Creation Console</h1>
+            <a routerLink="/instructor/courses" class="back-link">
+                <mat-icon>arrow_back</mat-icon> Back to Course List
+            </a>
+        </header>
+
+        <nav class="course-tabs mat-elevation-z4">
+            <div class="tab-item" [class.active]="activeStep === 'category'" (click)="setActiveStep('category')">
+                <mat-icon [fontIcon]="completedSteps['category'] ? 'check_circle' : 'looks_one'"
+                    class="tab-icon"></mat-icon>
+                <span class="tab-label">Course Category</span>
+            </div>
+            <div class="tab-separator"></div>
+
+            <div class="tab-item" [class.active]="activeStep === 'details'"
+                [class.disabled]="!completedSteps['category']" (click)="setActiveStep('details')">
+                <mat-icon [fontIcon]="completedSteps['details'] ? 'check_circle' : 'looks_two'"
+                    class="tab-icon"></mat-icon>
+                <span class="tab-label">Course Details</span>
+            </div>
+            <div class="tab-separator"></div>
+
+            <div class="tab-item" [class.active]="activeStep === 'lessons'"
+                [class.disabled]="!completedSteps['details']" (click)="setActiveStep('lessons')">
+                <mat-icon [fontIcon]="completedSteps['lessons'] ? 'check_circle' : 'looks_3'"
+                    class="tab-icon"></mat-icon>
+                <span class="tab-label">Lessons Content</span>
+            </div>
+            <div class="tab-separator"></div>
+
+            <div class="tab-item" [class.active]="activeStep === 'preview'"
+                [class.disabled]="!completedSteps['lessons']" (click)="setActiveStep('preview')">
+                <mat-icon fontIcon="looks_4" class="tab-icon"></mat-icon>
+                <span class="tab-label">Preview & Publish</span>
+            </div>
+        </nav>
+
+        <div *ngIf="activeStep === 'category' || isFieldDisabled('category')" class="step-content">
+            <h2 *ngIf="activeStep === 'category'" class="step-title">1. Define Category</h2>
+
+            <div *ngIf="activeStep === 'category' && !completedSteps.category" class="category-search">
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Search or Enter New Category</mat-label>
+                    <input matInput type="text" placeholder="e.g., Web Development, Data Science, Finance"
+                        [(ngModel)]="categorySearchText" (ngModelChange)="onCategorySearch()" />
+                    <mat-icon matPrefix>search</mat-icon>
+                </mat-form-field>
+
+                <div class="category-list-wrapper">
+                    <div *ngIf="categoryStatus === 'none' && categorySearchText.trim()"
+                        class="category-list mat-elevation-z1">
+                        <div *ngFor="let cat of filteredCategories"
+                            [class.selected]="selectedCategory?.categoryID === cat.categoryID"
+                            (click)="selectCategory(cat)">
+                            <mat-icon class="icon-small">{{
+                                selectedCategory?.categoryID === cat.categoryID ? 'folder_open' : 'folder'
+                                }}</mat-icon>
+                            {{ cat.name }}
+                        </div>
+                    </div>
+
+                    <div *ngIf="categoryStatus === 'existing'"
+                        class="no-results existing-category-alert mat-elevation-z1">
+                        <mat-icon color="accent">check_circle</mat-icon>
+                        Category "<strong>{{ selectedCategory?.name }}</strong>" has been selected from the existing
+                        list.
+                    </div>
+
+                    <div *ngIf="categoryStatus === 'new'" class="no-results new-category-alert mat-elevation-z1">
+                        <mat-icon color="warn">add_circle_outline</mat-icon>
+                        Category "<strong>{{ categorySearchText }}</strong>" will be created.
+                    </div>
+
+                    <mat-card *ngIf="categoryStatus === 'existing' && selectedCategory?.description"
+                        class="category-description-card">
+                        <mat-card-content class="flex items-start space-x-3">
+                            <mat-icon color="primary" class="mt-1 flex-shrink-0">info_outline</mat-icon>
+                            <div>
+                                <p class="text-sm font-semibold mb-1">Category Description:</p>
+                                <p class="description-text">{{ selectedCategory?.description }}</p>
+                            </div>
+                        </mat-card-content>
+                    </mat-card>
+
+                    <mat-form-field *ngIf="categoryStatus === 'new'" appearance="outline" class="full-width mt-4">
+                        <mat-label>Category Description (Required)</mat-label>
+                        <textarea matInput [(ngModel)]="newCategoryDescription" rows="4" name="newCategoryDescription"
+                            required
+                            placeholder="A short description of this new category (min 10 characters)."></textarea>
+                        <mat-icon matPrefix>edit_note</mat-icon>
+                        <mat-hint align="start">Required when creating a new category.</mat-hint>
+                    </mat-form-field>
+
+                    <div *ngIf="
+              categoryStatus === 'none' &&
+              categorySearchText.trim().length === 0 &&
+              !selectedCategory
+            " class="initial-instructions">
+                        Start typing above to search existing categories or define a new one.
+                    </div>
+                </div>
+
+                <div class="step-actions">
+                    <button mat-stroked-button color="primary" (click)="saveCategoryStep(true)"
+                        [disabled]="!isCategoryStepValid()">
+                        <mat-icon>save</mat-icon> Save Category
+                    </button>
+                </div>
+            </div>
+
+            <div *ngIf="activeStep === 'category' && completedSteps.category"
+                class="read-only-step-display mat-elevation-z1">
+                <div class="read-only-content">
+                    <div class="info-item">
+                        <mat-icon color="primary">category</mat-icon>
+                        <p>
+                            Selected Category: <strong>{{ courseData.categoryName }}</strong>
+                        </p>
+                    </div>
+                    <div class="info-item">
+                        <mat-icon color="accent">description</mat-icon>
+                        <p>
+                            Description: <span>{{ courseData.categoryDescription }}</span>
+                        </p>
+                    </div>
+                </div>
+
+                <div class="step-actions-read-only"
+                    style="display: flex; justify-content: flex-end; align-items: center; margin-top: 15px">
+                    <button mat-stroked-button color="primary" [disabled]="true" style="margin-right: 10px">
+                        <mat-icon>check</mat-icon> Category Saved
+                    </button>
+
+                    <button *ngIf="activeStep === 'category'" mat-flat-button color="primary" class="next-step-button"
+                        (click)="setActiveStep('details')">
+                        <mat-icon>arrow_forward</mat-icon> Next: Course Details
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <div *ngIf="activeStep === 'details' || isFieldDisabled('details')" class="step-content">
+            <h2 *ngIf="activeStep === 'details'" class="step-title">2. Core Course Metadata</h2>
+
+            <div *ngIf="activeStep === 'details' && !completedSteps.details" class="course-details-form">
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Course Title</mat-label>
+                    <input matInput [(ngModel)]="courseData.title"
+                        placeholder="E.g., The Ultimate Guide to Angular Development" />
+                    <mat-icon matPrefix>title</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Course Description</mat-label>
+                    <textarea matInput [(ngModel)]="courseData.description" rows="3"
+                        placeholder="A compelling summary for students (min 10 chars)."></textarea>
+                    <mat-icon matPrefix>description</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Course Syllabus / What they will learn</mat-label>
+                    <textarea matInput [(ngModel)]="courseData.syllabus" rows="4"
+                        placeholder="List key topics or learning outcomes (min 10 chars)."></textarea>
+                    <mat-icon matPrefix>subject</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Course Thumbnail URL</mat-label>
+                    <input matInput [(ngModel)]="courseData.thumbnailURL"
+                        placeholder="URL for the course image banner." />
+                    <mat-icon matPrefix>image</mat-icon>
+                </mat-form-field>
+
+                <div class="form-row">
+                    <mat-form-field appearance="outline" class="flex-grow">
+                        <mat-label>Skill Level</mat-label>
+                        <mat-select [(ngModel)]="courseData.level">
+                            <mat-option value="Beginner">Beginner</mat-option>
+                            <mat-option value="Intermediate">Intermediate</mat-option>
+                            <mat-option value="Expert">Expert</mat-option>
+                        </mat-select>
+                        <mat-icon matPrefix>school</mat-icon>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="flex-grow">
+                        <mat-label>Course Language</mat-label>
+                        <input matInput [(ngModel)]="courseData.language" placeholder="e.g., English, Spanish" />
+                        <mat-icon matPrefix>language</mat-icon>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="flex-grow">
+                        <mat-label>Estimated Duration (Minutes)</mat-label>
+                        <input matInput type="number" [(ngModel)]="courseData.duration" placeholder="Total minutes" />
+                        <mat-icon matPrefix>access_time</mat-icon>
+                    </mat-form-field>
+                </div>
+
+                <div *ngIf="activeStep === 'details'">
+                    <div class="step-actions" >
+                        <div>
+                            <mat-card class="course-material-card mat-elevation-z1 mt-3">
+                                <mat-card-header style="flex-direction: row; justify-content: space-around;">
+                                    <mat-card-title>Course Material (Overall Document)</mat-card-title>
+                                    <mat-card-subtitle>A single, main document/resource for the entire
+                                        course.</mat-card-subtitle>
+                                </mat-card-header>
+                                <mat-card-content>
+                                    <div class="file-upload-wrapper full-width">
+                                        <label for="courseMaterialFile" class="file-label">
+                                            <mat-icon>cloud_upload</mat-icon> Select Supplementary Course Material
+                                        </label>
+
+                                        <input type="file" id="courseMaterialFile"
+                                            (change)="onCourseMaterialFileChange($event)" accept=".pdf,.zip,.doc,.docx"
+                                            class="file-input" />
+
+                                        <div class="file-display-name">
+                                            <mat-icon
+                                                *ngIf="courseData.courseMaterialUrl || courseData.courseMaterialFile"
+                                                color="primary">
+                                                attach_file
+                                            </mat-icon>
+
+                                            {{
+                                            courseData.courseMaterialFile?.name ||
+                                            (courseData.courseMaterialUrl
+                                            ? 'File already uploaded.'
+                                            : 'No file selected.')
+                                            }}
+                                        </div>
+
+                                        <a *ngIf="courseData.courseMaterialUrl" [href]="courseData.courseMaterialUrl"
+                                            target="_blank" class="text-link view-link">
+                                            View Existing Material <mat-icon class="icon-tiny">open_in_new</mat-icon>
+                                        </a>
+                                    </div>
+                                </mat-card-content>
+                            </mat-card>
+                        </div>
+                        <div style="padding-top: 16px;">
+
+                            <button mat-stroked-button color="primary" (click)="saveDetailsStep()"
+                                [disabled]="!isCourseDetailsValid()">
+                                <mat-icon>save</mat-icon> Save Details
+                            </button>
+                        </div>
+                        <!-- <button mat-flat-button color="primary" class="next-step-button" (click)="saveDetailsStep(true)"
+                            [disabled]="!isCourseDetailsValid()">
+                            <mat-icon>arrow_forward</mat-icon> Next: Lessons Content
+                        </button> -->
+                    </div>
+                </div>
+            </div>
+
+            <div *ngIf="activeStep === 'details' && completedSteps.details"
+                class="read-only-step-display mat-elevation-z1">
+                <div class="read-only-content details-read-only" style="flex-direction: column">
+                    <div class="info-item full-row">
+                        <mat-icon color="primary">title</mat-icon>
+                        <p>
+                            Title: <strong>{{ courseData.title }}</strong>
+                        </p>
+                    </div>
+                    <div class="info-item full-row">
+                        <mat-icon color="accent">description</mat-icon>
+                        <p>
+                            Description: <span>{{ courseData.description }}</span>
+                        </p>
+                    </div>
+                    <div class="info-item">
+                        <mat-icon color="warn">school</mat-icon>
+                        <p>
+                            Level: <strong>{{ courseData.level }}</strong>
+                        </p>
+                    </div>
+                    <div class="info-item">
+                        <mat-icon color="primary">language</mat-icon>
+                        <p>
+                            Language: <strong>{{ courseData.language }}</strong>
+                        </p>
+                    </div>
+                    <div class="info-item">
+                        <mat-icon color="accent">access_time</mat-icon>
+                        <p>
+                            Duration: <strong>{{ courseData.duration }} mins</strong>
+                        </p>
+                    </div>
+                </div>
+                <!-- <div *ngIf="isFieldDisabled('details')" class="read-only-step-display mat-elevation-z1"> -->
+                <div class="step-actions-read-only">
+                    <button mat-stroked-button color="primary" [disabled]="true" style="margin-right: 10px">
+                        <mat-icon>check</mat-icon> Details Saved
+                    </button>
+                    <button mat-flat-button color="primary" class="next-step-button" (click)="setActiveStep('lessons')">
+                        <mat-icon>arrow_forward</mat-icon> Continue to Lessons
+                    </button>
+                </div>
+                <!-- </div> -->
+            </div>
+        </div>
+
+        <div *ngIf="activeStep === 'lessons'" class="step-content">
+            <h2 class="step-title">3. Structure and Add Lessons</h2>
+
+            <mat-card *ngIf="lessons.length > 0" class="lesson-list-summary mat-elevation-z3">
+                <h3>Course Outline ({{ lessons.length }} Lessons)</h3>
+                <mat-list role="list" class="lesson-list-content">
+                    <ng-container *ngFor="let lesson of lessons; let i = index">
+                        <mat-list-item role="listitem" (click)="viewLessonDetails(lesson)" class="lesson-item"
+                            [class.expanded]="expandedLessonId === lesson.lessonID">
+                            <mat-icon matListItemIcon class="text-accent">play_circle_outline</mat-icon>
+
+                            <div matListItemTitle class="lesson-title-text">
+                                #{{ lesson.orderIndex }}: <strong>{{ lesson.title }}</strong>
+                            </div>
+
+                            <div matListItemLine class="lesson-metadata-line">
+                                {{ lesson.estimatedTime }} min | {{ lesson.lessonType }}
+                            </div>
+
+                            <div matListItemMeta class="lesson-actions">
+                                <mat-icon *ngIf="lesson.includeDocument && lesson.lessonAttachmentUrl"
+                                    matTooltip="Supplementary Document Included" class="attachment-present-icon">
+                                    attach_file
+                                </mat-icon>
+
+                                <button mat-icon-button color="accent"
+                                    (click)="viewLessonDetails(lesson); $event.stopPropagation()"
+                                    matTooltip="View Lesson Details" class="action-button view-button">
+                                    <mat-icon>{{
+                                        expandedLessonId === lesson.lessonID ? 'visibility_off' : 'visibility'
+                                        }}</mat-icon>
+                                </button>
+
+                                <button mat-icon-button color="primary"
+                                    (click)="editLesson(lesson, i); $event.stopPropagation()" matTooltip="Edit Lesson"
+                                    class="action-button">
+                                    <mat-icon>edit</mat-icon>
+                                </button>
+                                <button mat-icon-button color="warn" (click)="removeLesson(i); $event.stopPropagation()"
+                                    matTooltip="Remove Lesson" class="action-button">
+                                    <mat-icon>delete</mat-icon>
+                                </button>
+                            </div>
+                        </mat-list-item>
+                        <mat-divider></mat-divider>
+
+                        <div *ngIf="expandedLessonId === lesson.lessonID" class="lesson-details-panel book-style">
+                            <div class="book-cover">
+                                <mat-icon>auto_stories</mat-icon>
+                                <h4>Lesson Details: {{ lesson.title }}</h4>
+                            </div>
+
+                            <div class="book-page">
+                                <h5>Content Summary:</h5>
+                                <p class="content-preview">
+                                    {{ lesson.content || 'No detailed content provided.' }}
+                                </p>
+
+                                <mat-divider></mat-divider>
+
+                                <div class="details-row">
+                                    <div class="detail-item">
+                                        <mat-icon color="primary" class="icon-tiny">videocam</mat-icon>
+                                        <a [href]="lesson.videoURL" target="_blank" class="link-external"
+                                            *ngIf="lesson.videoURL; else noVideo">Video Link</a>
+                                        <ng-template #noVideo>No Video URL Provided</ng-template>
+                                    </div>
+                                    <div class="detail-item">
+                                        <mat-icon color="accent" class="icon-tiny">schedule</mat-icon>
+                                        Est. Time: {{ lesson.estimatedTime }} minutes
+                                    </div>
+                                </div>
+
+                                <div *ngIf="lesson.includeDocument" class="details-row attachment-details">
+                                    <div class="detail-item full-width">
+                                        <mat-icon color="warn" class="icon-tiny">attach_file</mat-icon>
+                                        <a [href]="lesson.lessonAttachmentUrl" target="_blank" class="link-external">
+                                            View Attached Document: {{ lesson.attachmentFile?.name || 'Download File' }}
+                                        </a>
+                                        <mat-icon class="icon-tiny external-link">open_in_new</mat-icon>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </ng-container>
+                </mat-list>
+            </mat-card>
+
+            <mat-card class="lesson-create-form mat-elevation-z4">
+                <h3>{{ lessonToEditIndex !== null ? 'Editing Lesson' : 'Add New Lesson' }}</h3>
+                <p class="text-muted">Next Lesson Order: {{ lessons.length + 1 }}</p>
+
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Lesson Title</mat-label>
+                    <input matInput [(ngModel)]="lessonData.title"
+                        placeholder="e.g., Introduction to Signal Functions." />
+                    <mat-icon matPrefix>library_books</mat-icon>
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="full-width">
+                    <mat-label>Lesson Content/Summary</mat-label>
+                    <textarea matInput [(ngModel)]="lessonData.content" rows="4"
+                        placeholder="Detailed content or summary for the lesson."></textarea>
+                    <mat-icon matPrefix>description</mat-icon>
+                </mat-form-field>
+
+                <div class="form-row">
+                    <mat-form-field appearance="outline" class="flex-grow">
+                        <mat-label>Lesson Type (Fixed)</mat-label>
+                        <input matInput [ngModel]="lessonData.lessonType" disabled />
+                        <mat-icon matPrefix>slideshow</mat-icon>
+                        <mat-hint>All lessons are video-based content.</mat-hint>
+                    </mat-form-field>
+
+                    <mat-form-field appearance="outline" class="flex-grow">
+                        <mat-label>Estimated Duration (Minutes)</mat-label>
+                        <input matInput type="number" [(ngModel)]="lessonData.estimatedTime" min="1"
+                            placeholder="Time required in minutes." />
+                        <mat-icon matPrefix>schedule</mat-icon>
+                    </mat-form-field>
+                </div>
+
+                <div class="form-group-video">
+                    <mat-form-field appearance="outline" class="full-width">
+                        <mat-label>Video URL</mat-label>
+                        <input matInput type="url" [(ngModel)]="lessonData.videoURL"
+                            placeholder="Paste external video link here (e.g., Vimeo, YouTube)." />
+                        <mat-icon matPrefix>videocam</mat-icon>
+                    </mat-form-field>
+                </div>
+
+                <div class="form-group-attachment attachment-group-container">
+                    <div class="attachment-header-toggle">
+                        <mat-checkbox color="accent" [(ngModel)]="lessonData.includeDocument">
+                            <mat-icon class="icon-tiny">note_add</mat-icon> Include Supplementary Document
+                        </mat-checkbox>
+                        <small class="toggle-description" *ngIf="lessonData.includeDocument">
+                            (Students can download an external file.)
+                        </small>
+                    </div>
+
+                    <div *ngIf="lessonData.includeDocument" class="attachment-box mat-elevation-z1">
+                        <label for="attachment" class="file-label">
+                            <mat-icon>cloud_upload</mat-icon> Click to Select File
+                        </label>
+                        <input type="file" id="attachment" (change)="onFileChange($event)" />
+
+                        <small *ngIf="lessonData.attachmentFile" class="file-status file-success">
+                            <mat-icon class="icon-tiny">done</mat-icon> Attached:
+                            {{ lessonData.attachmentFile.name }} ({{
+                            (lessonData.attachmentFile.size / 1024 / 1024).toFixed(2)
+                            }}
+                            MB)
+                        </small>
+                        <small *ngIf="!lessonData.attachmentFile" class="file-status file-placeholder"
+                            [class.file-missing-alert]="
+                lessonData.includeDocument &&
+                !lessonData.attachmentFile &&
+                lessonToEditIndex === null
+              ">
+                            <mat-icon class="icon-tiny" *ngIf="
+                  lessonData.includeDocument &&
+                  !lessonData.attachmentFile &&
+                  lessonToEditIndex === null
+                ">warning</mat-icon>
+                            No file currently selected.
+                        </small>
+                    </div>
+                </div>
+
+                <div class="step-actions">
+                    <button mat-raised-button color="accent" class="next-step-button" (click)="saveLesson()"
+                        [disabled]="!isLessonFormValid">
+                        <mat-icon>{{ lessonToEditIndex !== null ? 'save' : 'add_circle' }}</mat-icon>
+                        {{ lessonToEditIndex !== null ? 'Save Changes' : 'Add Lesson' }}
+                    </button>
+                    <button *ngIf="lessonToEditIndex !== null" mat-button (click)="cancelEdit()">
+                        <mat-icon>cancel</mat-icon> Cancel Edit
+                    </button>
+                </div>
+            </mat-card>
+
+            <div class="step-actions lessons-final-actions">
+                <p *ngIf="lessons.length === 0" class="no-lessons-alert">
+                    <mat-icon class="icon-tiny">info</mat-icon> Must have at least one lesson to publish.
+                </p>
+                <button mat-stroked-button color="primary" (click)="saveLessonsStep(false)"
+                    [disabled]="lessons.length === 0">
+                    <mat-icon>save</mat-icon> Save Lesson Structure
+                </button>
+                <button mat-flat-button color="primary" class="next-step-button" (click)="setActiveStep('preview')"
+                    [disabled]="lessons.length === 0">
+                    <mat-icon>arrow_forward</mat-icon> Next: Preview
+                </button>
+            </div>
+        </div>
+
+        <div *ngIf="activeStep === 'preview'" class="step-content">
+            <h2 class="step-title">4. Preview and Finalize Course</h2>
+
+            <mat-card class="preview-card mat-elevation-z4">
+                <mat-card-header>
+                    <div mat-card-avatar>
+                        <mat-icon color="primary">school</mat-icon>
+                    </div>
+                    <mat-card-title>{{ courseData.title || 'Untitled Course' }}</mat-card-title>
+                    <mat-card-subtitle>{{ courseData.categoryName }} | Level: {{ courseData.level }}</mat-card-subtitle>
+                </mat-card-header>
+                <mat-card-content class="preview-content">
+                    <div class="preview-section">
+                        <h4>Course Summary</h4>
+                        <p>{{ courseData.description }}</p>
+                    </div>
+
+                    <div class="preview-section">
+                        <h4>Learning Outcomes (Syllabus)</h4>
+                        <p class="syllabus-text">{{ courseData.syllabus }}</p>
+                    </div>
+
+                    <div class="preview-section lessons-preview">
+                        <h4>Lesson Outline ({{ lessons.length }} Lessons)</h4>
+                        <mat-list>
+                            <mat-list-item *ngFor="let lesson of lessons">
+                                <mat-icon matListItemIcon color="accent">check</mat-icon>
+                                <div matListItemTitle>{{ lesson.title }}</div>
+                                <div matListItemLine>{{ lesson.estimatedTime }} mins | {{ lesson.lessonType }}</div>
+                            </mat-list-item>
+                        </mat-list>
+                    </div>
+
+                    <div class="preview-section metadata-grid">
+                        <div class="metadata-item">
+                            <mat-icon color="warn">access_time</mat-icon>
+                            <span>Total Duration: <strong>{{ courseData.duration }} minutes</strong></span>
+                        </div>
+                        <div class="metadata-item">
+                            <mat-icon color="primary">language</mat-icon>
+                            <span>Language: <strong>{{ courseData.language }}</strong></span>
+                        </div>
+                    </div>
+                </mat-card-content>
+            </mat-card>
+
+            <div class="step-actions final-action">
+                <button mat-flat-button color="primary" class="publish-button mat-elevation-z6"
+                    (click)="saveAndFinish()">
+                    <mat-icon>rocket_launch</mat-icon> Finalize & Publish Course
+                </button>
+            </div>
+        </div>
+    </mat-card>
+</div>

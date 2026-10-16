@@ -1,0 +1,85 @@
+<!-- <div class="profile-page-container">
+  <mat-card class="profile-sidebar">
+    <div class="user-avatar-section">
+      <div class="user-avatar-circle">
+        <img *ngIf="photoURL" [src]="photoURL" alt="Profile Avatar" class="sidebar-avatar-img">
+        <mat-icon *ngIf="!photoURL">person</mat-icon>
+      </div>
+      <h2 class="user-name">{{ userName }} </h2>
+      </div>
+
+    <nav class="profile-nav">
+      <a mat-button 
+         class="nav-item" 
+         [routerLink]="['public-profile']" 
+         routerLinkActive="active-link"
+         (click)="activeLink = 'public-profile'">
+        Profile
+      </a>
+      <a mat-button 
+         class="nav-item" 
+         [routerLink]="['photo']" 
+         routerLinkActive="active-link"
+         (click)="activeLink = 'photo'">
+        Photo
+      </a>
+      </nav>
+
+    <div class="back-button-section">
+      <button mat-flat-button color="accent" (click)="goBackToDashboard()">
+        <mat-icon>arrow_back</mat-icon>
+        Back to Dashboard
+      </button>
+    </div>
+  </mat-card>
+
+  <div class="profile-content-area">
+    <router-outlet></router-outlet>
+  </div>
+</div> -->
+
+
+
+<div class="profile-page-container">
+  <mat-card class="profile-sidebar">
+    <div class="user-avatar-section">
+      <div class="user-avatar-circle">
+        <img *ngIf="photoURL" [src]="photoURL" alt="Profile Avatar" class="sidebar-avatar-img">
+        
+        <!-- 🟢 CHANGE: Display Initials when photoURL is null -->
+        <div *ngIf="!photoURL" class="initials-display">
+            {{ getUserInitial() }}
+        </div>
+      </div>
+      <h2 class="user-name">{{ userName }} </h2>
+    </div>
+
+    <nav class="profile-nav">
+      <a mat-button 
+         class="nav-item" 
+         [routerLink]="['public-profile']" 
+         routerLinkActive="active-link"
+         (click)="activeLink = 'public-profile'">
+        Profile
+      </a>
+      <a mat-button 
+         class="nav-item" 
+         [routerLink]="['photo']" 
+         routerLinkActive="active-link"
+         (click)="activeLink = 'photo'">
+        Photo
+      </a>
+      </nav>
+
+    <div class="back-button-section">
+      <!-- <button mat-flat-button color="accent" (click)="goBackToDashboard()">
+        <mat-icon>arrow_back</mat-icon>
+        Back to Dashboard
+      </button> -->
+    </div>
+  </mat-card>
+
+  <div class="profile-content-area">
+    <router-outlet></router-outlet>
+  </div>
+</div>

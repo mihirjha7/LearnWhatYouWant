@@ -1,0 +1,97 @@
+@if (loading()) {
+  <div class="ws-focus__body"><app-skeleton [lines]="3" label="Opening attempt"></app-skeleton></div>
+} @else if (attempt(); as attempt) {
+  <div class="ws-focus">
+    <header class="ws-focus__bar">
+      <div class="ws-stack" style="gap: 0">
+        <span class="ws-xs ws-muted">{{ attempt.courseTitle }}</span>
+        <strong>{{ attempt.assessmentTitle }}</strong>
+      </div>
+      <div class="ws-row-flex">
+        <span class="ws-small ws-muted" aria-live="polite">
+          @switch (saveState()) {
+            @case ('saving') { Saving… }
+            @case ('saved') { Saved }
+            @case ('retrying') { Not saved — retrying }
+            @default { {{ network.online() ? 'Unsaved changes' : 'Offline — saved on this device' }} }
+          }
+        </span>
+        <span class="ws-timer" [attr.data-state]="timerState()" role="timer" [attr.aria-label]="'Time remaining ' + timerLabel()">&#9201; {{ timerLabel() }}</span>
+        <button type="button" class="button button--sm ws-mobile-only" (click)="navOpen.set(!navOpen())" [attr.aria-expanded]="navOpen()" aria-controls="question-navigator">Questions</button>
+        <button type="button" class="button button--primary button--sm" (click)="requestSubmit()">Submit</button>
+      </div>
+    </header>
+    <p class="sr-only" aria-live="assertive">{{ announcement() }}</p>
+
+    <div class="ws-focus__body ws-split ws-split--left">
+      <nav id="question-navigator" class="ws-card ws-drawer-mobile" [class.open]="navOpen()" aria-label="Question navigator">
+        <h2 class="ws-card__title">Questions</h2>
+        <div class="ws-row-flex">
+          @for (question of questions(); track question.id; let i = $index) {
+            <button type="button" class="button button--sm" style="min-width: 2.75rem"
+              [attr.aria-current]="!reviewing() && index() === i ? 'step' : null"
+              [attr.aria-pressed]="!reviewing() && index() === i"
+              [attr.aria-label]="'Question ' + (i + 1) + (isAnswered(responses()[question.id]) ? ', answered' : ', not answered') + (flagged().includes(question.id) ? ', flagged' : '')"
+              [style.background]="isAnswered(responses()[question.id]) ? 'var(--surface-progress)' : null"
+              (click)="go(i)">{{ i + 1 }}@if (flagged().includes(question.id)) {<span aria-hidden="true">&#9873;</span>}</button>
+          }
+        </div>
+        <ul class="ws-list ws-xs ws-muted">
+          <li>Shaded: answered · &#9873; flagged</li>
+          <li>{{ questions().length - unanswered().length }} of {{ questions().length }} answered</li>
+        </ul>
+        <button type="button" class="button button--sm" (click)="reviewing.set(true)">Review all</button>
+      </nav>
+
+      <div class="ws-stack" style="min-width: 0">
+        @if (!reviewing() && current(); as question) {
+          <section class="ws-card" aria-labelledby="question-title">
+            <div class="ws-spread">
+              <span class="ws-eyebrow">Question {{ index() + 1 }} of {{ questions().length }} · {{ question.points }} pts</span>
+              <button type="button" class="button button--sm" [attr.aria-pressed]="flagged().includes(question.id)" (click)="toggleFlag(question.id)">&#9873; {{ flagged().includes(question.id) ? 'Flagged' : 'Flag for review' }}</button>
+            </div>
+            <h1 id="question-title" style="font-size: 1.35rem">{{ question.prompt }}</h1>
+            <app-question-renderer [question]="question" [value]="responses()[question.id]" (valueChange)="setResponse(question.id, $event)"></app-question-renderer>
+          </section>
+          <div class="ws-spread">
+            <button type="button" class="button" [disabled]="index() === 0" (click)="go(index() - 1)">Previous</button>
+            <button type="button" class="button button--primary" (click)="next()">{{ index() === questions().length - 1 ? 'Review answers' : 'Save and next' }}</button>
+          </div>
+        } @else {
+          <section class="ws-card" aria-labelledby="review-title">
+            <h1 id="review-title" style="font-size: 1.35rem">Review before submitting</h1>
+            @if (unanswered().length) { <p class="ws-banner ws-banner--warning">{{ unanswered().length }} question(s) unanswered.</p> }
+            <ul class="ws-list">
+              @for (question of questions(); track question.id; let i = $index) {
+                <li>
+                  <span class="ws-item__body"><strong>{{ i + 1 }}. {{ question.prompt }}</strong><span>{{ isAnswered(responses()[question.id]) ? 'Answered' : 'Not answered' }}{{ flagged().includes(question.id) ? ' · Flagged' : '' }}</span></span>
+                  <button type="button" class="button button--sm" (click)="go(i)">Edit</button>
+                </li>
+              }
+            </ul>
+          </section>
+          @if (confirming()) {
+            <section class="ws-card ws-card--attention" role="alertdialog" aria-labelledby="confirm-title" aria-describedby="confirm-detail">
+              <h2 id="confirm-title" class="ws-card__title">Submit this attempt?</h2>
+              <p id="confirm-detail">You have {{ unanswered().length }} unanswered and {{ flagged().length }} flagged question(s). After submitting you cannot change your answers.</p>
+              <div class="ws-row-flex">
+                <button type="button" class="button" (click)="confirming.set(false)">Keep working</button>
+                <button type="button" class="button button--primary" [disabled]="submitting()" (click)="submit()">{{ submitting() ? 'Submitting…' : 'Submit final answers' }}</button>
+              </div>
+            </section>
+          } @else {
+            <div class="ws-spread">
+              <button type="button" class="button" (click)="go(0)">Back to questions</button>
+              <button type="button" class="button button--primary" (click)="confirming.set(true)">Submit attempt</button>
+            </div>
+          }
+        }
+      </div>
+    </div>
+  </div>
+} @else {
+  <div class="ws-focus__body">
+    <app-empty-state tone="error" heading="Attempt not available" message="This attempt may have ended or belongs to another account." actionLabel="Back to assessments" actionLink="/student/assessments"></app-empty-state>
+    <a routerLink="/student/dashboard" class="sr-only">Dashboard</a>
+  </div>
+}

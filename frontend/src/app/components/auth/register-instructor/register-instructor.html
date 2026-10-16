@@ -1,0 +1,14 @@
+<section class="auth-page">
+  <aside class="auth-context"><a class="auth-brand" routerLink="/home"><span aria-hidden="true">L</span>Learnova</a><div class="context-copy"><p>Teach with clarity</p><h1>Turn expertise into learning people can use.</h1><span>Structure practical courses, support learners, and improve each cohort with meaningful evidence.</span><ul class="context-list"><li><span>&#10003;</span>Draft-first curriculum studio</li><li><span>&#10003;</span>Accessible media and assessment checks</li><li><span>&#10003;</span>Feedback and learner progress in one workspace</li></ul></div><p class="context-note">Instructor access is subject to platform review and policy.</p></aside>
+  <div class="auth-form-shell"><div class="auth-panel"><p>Instructor application</p><h2>Apply to teach</h2><p class="auth-intro">Tell us who you are and the subject you are ready to teach.</p>
+    <form class="auth-form" [formGroup]="registerForm" (ngSubmit)="onSubmit()" novalidate>
+      <div class="field"><label for="teacher-name">Full name</label><input id="teacher-name" formControlName="name" autocomplete="name"><small *ngIf="registerForm.controls.name.touched && registerForm.controls.name.invalid" class="field-error">Enter your full name.</small></div>
+      <div class="field"><label for="teacher-email">Professional email</label><input id="teacher-email" type="email" formControlName="email" autocomplete="email"><small *ngIf="registerForm.controls.email.touched && registerForm.controls.email.invalid" class="field-error">Enter a valid email address.</small></div>
+      <div class="field"><label for="teacher-expertise">Primary area of expertise</label><input id="teacher-expertise" formControlName="expertise" autocomplete="organization-title" placeholder="For example, cloud architecture"><small *ngIf="registerForm.controls.expertise.touched && registerForm.controls.expertise.invalid" class="field-error">Describe your primary subject.</small></div>
+      <div class="field"><label for="teacher-password">Password</label><div class="password-field"><input id="teacher-password" [type]="showPassword() ? 'text' : 'password'" formControlName="password" autocomplete="new-password"><button type="button" (click)="showPassword.set(!showPassword())">{{ showPassword() ? 'Hide' : 'Show' }}</button></div><small>Use at least 8 characters.</small></div>
+      <label class="check-field"><input type="checkbox" formControlName="policy"><span>I understand that instructor publishing permissions may require identity and content-policy review.</span></label>
+      @if (errorMessage()) { <div class="form-error" role="alert">{{ errorMessage() }}</div> }
+      <button class="submit-button" type="submit" [disabled]="isSubmitting()">{{ isSubmitting() ? 'Submitting application...' : 'Submit application' }}</button>
+    </form><p class="auth-footer">Already teach on Learnova? <a routerLink="/login">Sign in</a></p>
+  </div></div>
+</section>

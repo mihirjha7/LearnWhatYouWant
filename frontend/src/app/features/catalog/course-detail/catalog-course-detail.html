@@ -1,0 +1,108 @@
+@if (isLoading()) {
+  <div class="detail-loading" aria-label="Loading course">
+    <div class="skeleton"></div>
+    <div class="skeleton"></div>
+  </div>
+} @else if (course(); as course) {
+  <header class="course-hero" [attr.data-accent]="course.accent">
+    <div class="hero-inner">
+      <nav aria-label="Breadcrumb"><a routerLink="/catalog">Catalog</a><span>/</span><span>{{ course.category }}</span></nav>
+      <div class="hero-grid">
+        <div>
+          <p class="eyebrow">{{ course.category }}</p>
+          <h1>{{ course.title }}</h1>
+          <p class="summary">{{ course.summary }}</p>
+          <p class="instructor">Created with {{ course.instructorName }}</p>
+        </div>
+        <dl>
+          <div><dt>Rating</dt><dd><span aria-hidden="true">&#9733;</span> {{ course.rating.toFixed(1) }}</dd></div>
+          <div><dt>Level</dt><dd>{{ course.level }}</dd></div>
+          <div><dt>Time</dt><dd>{{ durationLabel(course.durationMinutes) }}</dd></div>
+          <div><dt>Language</dt><dd>{{ course.language }}</dd></div>
+        </dl>
+      </div>
+    </div>
+  </header>
+
+  <div class="detail-layout">
+    <main class="detail-main">
+      <section aria-labelledby="outcomes-title">
+        <p class="section-kicker">What you will be able to do</p>
+        <h2 id="outcomes-title">Course outcomes</h2>
+        <ul class="outcome-grid">
+          @for (outcome of course.outcomes; track outcome) {
+            <li><span aria-hidden="true">&#10003;</span>{{ outcome }}</li>
+          }
+        </ul>
+      </section>
+
+      <section aria-labelledby="curriculum-title">
+        <div class="section-heading">
+          <div><p class="section-kicker">Your route through the course</p><h2 id="curriculum-title">Curriculum</h2></div>
+          <span>{{ course.modules.length }} modules · {{ totalLessons(course) }} lessons</span>
+        </div>
+        <div class="curriculum">
+          @for (module of course.modules; track module.id; let first = $first; let moduleNumber = $index) {
+            <details [open]="first">
+              <summary>
+                <span>0{{ moduleNumber + 1 }}</span>
+                <strong>{{ module.title }}</strong>
+                <small>{{ module.lessons.length }} lessons</small>
+              </summary>
+              <ol>
+                @for (lesson of module.lessons; track lesson.id) {
+                  <li>
+                    <div><strong>{{ lesson.title }}</strong><span>{{ lesson.type }}</span></div>
+                    <div>
+                      @if (lesson.preview) { <span class="preview-label">Preview</span> }
+                      <span>{{ lesson.durationMinutes }} min</span>
+                    </div>
+                  </li>
+                }
+              </ol>
+            </details>
+          }
+        </div>
+      </section>
+
+      <section class="course-fit" aria-labelledby="fit-title">
+        <div><p class="section-kicker">Before you begin</p><h2 id="fit-title">Is this course right for you?</h2></div>
+        <div><h3>Built for</h3><ul>@for (item of course.audience; track item) { <li>{{ item }}</li> }</ul></div>
+        <div><h3>Prerequisites</h3><ul>@for (item of course.prerequisites; track item) { <li>{{ item }}</li> }</ul></div>
+      </section>
+
+      <section class="accessibility" aria-labelledby="accessibility-title">
+        <div><p class="section-kicker">Learn your way</p><h2 id="accessibility-title">Accessibility</h2></div>
+        <ul>@for (item of course.accessibility; track item) { <li>{{ item }}</li> }</ul>
+      </section>
+    </main>
+
+    <aside class="enrollment-panel" aria-labelledby="enrollment-title">
+      <p class="eyebrow">Ready when you are</p>
+      <h2 id="enrollment-title">Start with a clear plan</h2>
+      <p>Move at your pace and return to the exact lesson where you stopped.</p>
+      <ul>
+        <li>{{ totalLessons(course) }} focused lessons</li>
+        <li>{{ course.skills.length }} skills with evidence</li>
+        <li>Certificate after completion</li>
+      </ul>
+
+      @if (course.enrollmentState === 'enrolled' || course.enrollmentState === 'assigned') {
+        <button type="button" class="primary-button" (click)="continueLearning()">Continue learning</button>
+      } @else {
+        <button type="button" class="primary-button" [disabled]="enrollInFlight()" (click)="enroll()">
+          {{ enrollInFlight() ? 'Adding course...' : 'Enroll now' }}
+        </button>
+      }
+      <small>No duplicate enrollment. Your place is saved once.</small>
+      @if (errorMessage()) { <p class="enroll-error" role="alert">{{ errorMessage() }}</p> }
+    </aside>
+  </div>
+} @else {
+  <section class="not-found-state">
+    <p>Course unavailable</p>
+    <h1>We could not find this course</h1>
+    <span>{{ errorMessage() || 'It may have moved, been archived, or is not visible to your account.' }}</span>
+    <a routerLink="/catalog">Return to the catalog</a>
+  </section>
+}

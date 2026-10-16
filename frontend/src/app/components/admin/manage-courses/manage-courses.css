@@ -1,0 +1,149 @@
+/* src/app/components/admin/manage-courses/manage-courses.css */
+.page-container {
+  padding: 2rem;
+  background-color: #f8f9fa;
+  min-height: 100%;
+}
+
+.page-header {
+  margin-bottom: 1.5rem;
+}
+
+/* * --- THIS IS THE UPDATED SECTION ---
+ * We are removing the 'card' look (white background, shadow, padding)
+ * and making the toolbar blend into the page.
+*/
+.filter-toolbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 1.5rem; /* Increased gap slightly */
+  
+  /* Make it blend with the page */
+  background: transparent;
+  box-shadow: none;
+  
+  /* Adjust spacing */
+  padding: 0;
+  margin-bottom: 2rem;
+}
+/* --- END OF UPDATED SECTION --- */
+
+
+.search-field {
+  width: 350px;
+  max-width: 100%;
+}
+
+.filters {
+  display: flex;
+  gap: 1.5rem; /* Increased gap slightly */
+  flex-wrap: wrap;
+}
+
+.filters .mat-mdc-form-field {
+  width: 180px;
+}
+
+/* * NEW RULE: This removes the extra bottom spacing
+ * from form fields when they are in our new transparent toolbar.
+*/
+.filter-toolbar .mat-mdc-form-field {
+  margin-bottom: -1.25em;
+}
+
+.loading-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem 0;
+  gap: 1rem;
+  color: #6c757d;
+}
+
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 2rem;
+}
+
+.course-card {
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.course-card img[mat-card-image] {
+  width: 100%;
+  height: 180px;
+  object-fit: contain;
+  background-color: #f7f7f7;
+}
+
+
+.course-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+}
+
+.mat-mdc-card-header {
+  padding-bottom: 0;
+}
+
+.mat-mdc-card-title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.mat-mdc-card-subtitle {
+  color: #00BCD4; /* Cyan */
+  font-weight: 500;
+}
+
+.mat-mdc-card-content.card-meta {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.85rem;
+  color: #6c757d;
+  padding-top: 0;
+}
+
+.mat-mdc-card-actions {
+  justify-content: space-between;
+}
+
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 5rem 0;
+  color: #6c757d;
+  text-align: center;
+}
+
+.empty-state-icon {
+  font-size: 5rem;
+  width: 5rem;
+  height: 5rem;
+  margin-bottom: 1rem;
+}
+
+@media (max-width: 768px) {
+  .page-container {
+    padding: 1rem;
+  }
+  .filter-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  .search-field,
+  .filters .mat-mdc-form-field {
+    width: 100%;
+  }
+  
+  /* Fix spacing on mobile */
+  .filter-toolbar .mat-mdc-form-field {
+    margin-bottom: 0;
+  }
+}
